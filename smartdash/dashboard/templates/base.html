@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartDash{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" type="image/x-icon" href="/static/images/smartdash.ico">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h2><a href="/#" class="nav-brand-link">SmartDash</a></h2>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="/utilities">Utilities</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/logout">Logout</a></li>
+            {% else %}
+                <li><a href="/login">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    <script>
+    function toggleMenu() {
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    }
+    </script>
+    
+    {% block content %}
+    {% endblock %}
+
+    <footer class="site-footer">
+        <p>© 2025 SmartDash. All rights reserved.</p>
+    </footer>
+</body>
+</html>

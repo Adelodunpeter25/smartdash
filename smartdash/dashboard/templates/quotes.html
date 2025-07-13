@@ -1,0 +1,31 @@
+{%extends 'base.html' %}
+{% block title %}SmartDash - Random Quote Generator{% endblock %}
+
+{% block content %}
+{% load static  %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Quote Generator</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="quote-container">
+        <h1 class="quote-title">🌟 Random Quote</h1>
+
+        {% if quote %}
+            <blockquote class="quote-block">
+                <p class="quote-content">"{{ quote.content }}"</p>
+                <footer class="quote-footer">— {{ quote.author }}</footer>
+            </blockquote>
+        {% else %}
+            <p class="no-quote-msg">No quotes available. Please add some.</p>
+        {% endif %}
+
+        <form method="get" class="quote-form">
+            <button type="submit" class="quote-btn">Show Another Quote</button>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}
