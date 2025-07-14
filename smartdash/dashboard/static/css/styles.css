@@ -1,6 +1,6 @@
 :root {
     --primary-color: #000000;
-    --secondary-color: #2e2e2e;
+    --secondary-color: #292828;
     --background-color: #ffffff;
     --text-color: #000000;
 }
@@ -401,15 +401,15 @@ body {
 
 .auth-form h2 {
     text-align: center;
-    margin-bottom: 2.5rem;
-    color: #181d23;
+    margin-bottom: 1.4rem;
+    color: #060708;
     font-size: 1.95rem;
 }
 
 .auth-form p {
     text-align: center;
-    margin-bottom: 0.8rem;
-    color: #414343;
+    margin-bottom: 1rem;
+    color: #353535;
 }
 
 .form-group {
@@ -418,7 +418,7 @@ body {
 
 .form-group label {
     display: block;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.6rem;
     font-weight: bold;
     color: #0f1317;
 }
@@ -527,7 +527,7 @@ body {
     text-align: center;
     padding: 2rem;
     background-color: var(--background-color, #ffffff);
-    olor: var(--text-color, #000000);
+    color: var(--text-color, #000000);
 }
 
 .logout h1 {
