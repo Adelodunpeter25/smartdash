@@ -1,6 +1,7 @@
 import random
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Quote
@@ -23,7 +24,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return redirect('/')
+            return redirect('/dashboard')
         else:
             messages.error(request, 'Invalid credentials')
     return render(request, 'login.html')
@@ -41,11 +42,19 @@ def signup_view(request):
             else:
                 user = User.objects.create_user(username=username, email=email, password=password1)
                 login(request, user)
-                return redirect('/')
+                return redirect('/dashboard')
         else:
             messages.error(request, 'Passwords do not match')
     return render(request, 'signup.html')
 
 def logout_view(request):
     logout(request)
-    return redirect('/')
+    return render(request, 'logout.html')
+
+@login_required
+def dashboard_view(request):
+    return render(request, 'dashboard.html')
+
+@login_required
+def profile_view(request):
+    return render(request, 'profile.html')
