@@ -202,11 +202,12 @@ body {
 .logout-btn-custom {
     background-color: var(--primary-color);
     color: var(--background-color);
-    padding: 1rem 2.3rem;
+    padding: 0.75rem 2.05rem;
     text-decoration: none;
-    border-radius:12px;
+    border-radius:7px;
     font-weight: bold;
     cursor: pointer;
+    font-size: 1.1rem;
     transition: transform 0.3s, background-color 0.3s;
 }
 .cta-button {
@@ -226,7 +227,7 @@ body {
     color: var(--background-color);
     padding: 1.3rem 2.5rem;
     text-decoration: none;
-    border-radius:12px;
+    border-radius:7px;
     font-weight: bold;
     font-size: 1.59rem;
     cursor: pointer;
@@ -518,36 +519,36 @@ body {
     transform: translateY(-2px);
 }
 .logout {
-  min-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 2rem;
-  background-color: var(--background-color, #ffffff);
-  color: var(--text-color, #000000);
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--background-color, #ffffff);
+    olor: var(--text-color, #000000);
 }
 
 .logout h1 {
-  font-size: 2rem;
-  color: #000000;
-  margin-bottom: 2rem;
-  text-transform: capitalize;
+    font-size: 2rem;
+    color: #000000;
+    margin-bottom: 2rem;
+    text-transform: none;
 }
 
 .home-button {
-  display: inline-block;
-  background-color: var(--primary-color, #000000);
-  color: #ffffff;
-  padding: 0.8rem 1.5rem;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+    background-color: var(--primary-color, #000000);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 7px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .home-button:hover {
-  background-color: var(--secondary-color);
-  transform: translateY(-2px);
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
 }
