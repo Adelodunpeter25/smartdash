@@ -9,7 +9,7 @@ SmartDash is a comprehensive web-based productivity platform built with Django t
 * [✨ Features](#-features)
 * [🛠️ Technology Stack](#️-technology-stack)
 * [📸 Screenshots](#-screenshots)
-* [🚀 Installation & Setup](#-installation--setup)e)
+* [🚀 Installation & Setup](#-installation--setup)
 * [🌐 Deployment](#-deployment)
 * [📄 License](#-license)
 
