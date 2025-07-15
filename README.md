@@ -1,6 +1,6 @@
 # 📊 SmartDash – Your All-in-One Productivity Dashboard
 
-SmartDash is a comprehensive web-based productivity platform built with Django that brings together inspiration, organization, and focus in one clean, accessible space. Smartdash is built with the purpose to simplify  your digital life.
+SmartDash is a comprehensive web-based productivity platform built with Django that brings together inspiration, organization, and focus in one clean, accessible space. Smartdash is built with the purpose to simplify your digital life and footprint.
 
 ---
 
@@ -9,8 +9,7 @@ SmartDash is a comprehensive web-based productivity platform built with Django t
 * [✨ Features](#-features)
 * [🛠️ Technology Stack](#️-technology-stack)
 * [📸 Screenshots](#-screenshots)
-* [🚀 Installation & Setup](#-installation--setup)
-* [🧪 Usage](#-usage)
+* [🚀 Installation & Setup](#-installation--setup)e)
 * [🌐 Deployment](#-deployment)
 * [📄 License](#-license)
 
@@ -18,12 +17,7 @@ SmartDash is a comprehensive web-based productivity platform built with Django t
 
 ## ✨ Features
 
-* 🧠 Daily motivation and quotes widget
-* ✅ Task manager with deadlines and priorities
-* 📅 Calendar overview and scheduling
-* 🕒 Pomodoro timer for focused work
-* 🌙 Dark and light theme support
-* 🔒 User authentication with profile customization
+* 🧠 Daily motivation and quotes 
 
 ---
 
@@ -80,17 +74,6 @@ python manage.py runserver
 Then visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
 ---
-
-## 🧪 Usage
-
-* Log in or sign up to access your personalized dashboard.
-* Add, edit, or remove tasks with ease.
-* Use the Pomodoro timer to stay focused.
-* Track daily goals and events using the calendar widget.
-* Switch themes based on your preference.
-
----
-
 ## 🌐 Deployment
 
 SmartDash can be deployed on platforms like **Render**, **Heroku**, or **VPS**. For production:
