@@ -1,53 +1,68 @@
 # 📊 SmartDash – Your All-in-One Productivity Dashboard
 
-SmartDash is a comprehensive web-based productivity platform built with Django that brings together inspiration, organization, and focus in one clean, accessible space. Smartdash is built with the purpose to simplify your digital life and footprint.
+**SmartDash** is a clean, responsive, web-based productivity platform built with Django. It’s designed to unify your essential tools—like notes, conversions, quotes, and calculations—into one seamless dashboard, keeping students and professionals organized and focused.
 
 ---
 
 ## 📚 Table of Contents
 
-* [✨ Features](#-features)
-* [🛠️ Technology Stack](#️-technology-stack)
-* [📸 Screenshots](#-screenshots)
-* [🚀 Installation & Setup](#-installation--setup)
-* [🌐 Deployment](#-deployment)
-* [📄 License](#-license)
+- [✨ Features](#-features)
+- [🛠️ Technology Stack](#️-technology-stack)
+- [📸 Screenshots](#-screenshots)
+- [🚀 Installation & Setup](#-installation--setup)
+- [🌐 Deployment](#-deployment)
+- [📄 License](#-license)
 
 ---
 
 ## ✨ Features
 
-* 🧠 Daily motivation and quotes 
+- 🧠 Daily motivational quote generator for a focused start
+- 📝 Notepad for quick notes, drafts, or journals (with autosave and edit options)
+- 💰 Currency converter using real-time exchange rates
+- 📐 Unit converter supporting length, weight, temperature, speed, volume, and time
+- ➗ Simple arithmetic calculator for quick math operations
+- 🎯 Organized, distraction-free dashboard tailored for students and professionals
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer    | Technology                        |
-| -------- | --------------------------------- |
-| Backend  | Django 5.2.4                      |
-| Frontend | HTML5, CSS3, JavaScript           |
-| Database | SQLite (for development)          |
-| Auth     | Django built-in authentication    |
-| Styling  | Custom CSS with responsive design |
+| Layer       | Technology                     |
+|------------ |-------------------------------|
+| Backend     | Django 5.2.4                   |
+| Frontend    | HTML5, CSS3, JavaScript        |
+| Database    | SQLite (default)               |
+| Auth        | Django built-in authentication |
+| Styling     | Custom CSS (fully responsive)  |
 
 ---
 
 ## 📸 Screenshots
 
+> Add images to your `screenshots/` folder and link them below.
+
 ### 🏠 Dashboard Overview
+
+![Dashboard](screenshots/dashboard.png)
 
 ### ✅ Task Manager
 
-### 📅 Calendar & Events
+![Tasks](screenshots/tasks.png)
 
-### 👤 User Profile
+### 📝 Notepad
+
+![Notepad](screenshots/notepad.png)
+
+### 💱 Currency & Unit Converter
+
+![Converter](screenshots/converter.png)
 
 ---
 
 ## 🚀 Installation & Setup
 
-Follow these steps to get SmartDash running locally:
+Follow these steps to run SmartDash locally:
 
 ```bash
 # 1. Clone the repository
@@ -58,18 +73,18 @@ cd smartdash
 python -m venv venv
 source venv/bin/activate   # On Windows: venv\Scripts\activate
 
-# 3. Install project dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Run database migrations
+# 4. Apply migrations
 python manage.py migrate
 
-# 5. (Optional) Create a superuser for admin access
+# 5. (Optional) Create admin account
 python manage.py createsuperuser
 
-# 6. Launch the development server
+# 6. Start the server
 python manage.py runserver
-```
+
 
 Then visit [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
