@@ -1,5 +1,5 @@
 import random
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -7,11 +7,14 @@ from django.contrib import messages
 from .models import Quote
 
 def landing_page(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     return render(request, 'landing.html')
 
 def utilities_page(request):
     return render(request, 'utilities.html')
 
+@login_required
 def random_quote(request):
     quotes = Quote.objects.all()
     quote = random.choice(quotes) if quotes else None
@@ -21,8 +24,15 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        remember_me = request.POST.get('remember_me', False) == 'on'
+        
         user = authenticate(request, username=username, password=password)
         if user:
+            if remember_me:
+                request.session.set_expiry(60 * 60 * 24 * 30)
+            else:
+                request.session.set_expiry(0)
+                
             login(request, user)
             return redirect('/dashboard')
         else:
@@ -58,3 +68,14 @@ def dashboard_view(request):
 @login_required
 def profile_view(request):
     return render(request, 'profile.html')
+
+@login_required
+def calculator_view(request):
+    return render(request, 'calculator.html')
+
+@login_required
+def notepad_view(request):
+    return render(request, 'notepad.html')
+@login_required
+def unit_converter_view(request):
+    return render(request, 'unit_converter.html')

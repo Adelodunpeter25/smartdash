@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Unit Converter - SmartDash{% endblock %}
+
+{% block content %}
+
+<div class="converter-container">
+  <h1>Unit Converter</h1>
+
+  <div class="form-group">
+    <label for="category">Category</label>
+    <select id="category" onchange="populateUnits()">
+      <option value="length">Length</option>
+      <option value="weight">Weight</option>
+      <option value="temperature">Temperature</option>
+      <option value="speed">Speed</option>
+      <option value="volume">Volume</option>
+      <option value="time">Time</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="from-unit">From</label>
+    <select id="from-unit"></select>
+  </div>
+
+  <div class="form-group">
+    <label for="to-unit">To</label>
+    <select id="to-unit"></select>
+  </div>
+
+  <div class="form-group">
+    <label for="value">Value</label>
+    <input type="number" id="value" value="1" oninput="convertUnit()" />
+  </div>
+
+  <div id="result">1 m = 1 m</div>
+</div>
+
+<script>
+const units = {
+  length: {
+    m: 1,
+    km: 1000,
+    cm: 0.01,
+    mm: 0.001,
+    mi: 1609.34,
+    yd: 0.9144,
+    ft: 0.3048,
+    in: 0.0254
+  },
+  weight: {
+    kg: 1,
+    g: 0.001,
+    mg: 0.000001,
+    lb: 0.453592,
+    oz: 0.0283495
+  },
+  temperature: {
+    C: "Celsius",
+    F: "Fahrenheit",
+    K: "Kelvin"
+  },
+  speed: {
+    'm/s': 1,
+    'km/h': 0.277778,
+    'mph': 0.44704,
+  },
+  volume: {
+    L: 1,
+    mL: 0.001,
+    "m³": 1000,
+    gallon: 3.78541,
+    pint: 0.473176
+  },
+  time: {
+    second: 1,
+    minute: 60,
+    hour: 3600,
+    day: 86400
+  }
+};
+
+function populateUnits() {
+  const category = document.getElementById("category").value;
+  const fromSelect = document.getElementById("from-unit");
+  const toSelect = document.getElementById("to-unit");
+
+  fromSelect.innerHTML = "";
+  toSelect.innerHTML = "";
+
+  for (let key in units[category]) {
+    const option1 = document.createElement("option");
+    option1.value = key;
+    option1.text = key;
+    fromSelect.add(option1);
+
+    const option2 = document.createElement("option");
+    option2.value = key;
+    option2.text = key;
+    toSelect.add(option2);
+  }
+
+  fromSelect.selectedIndex = 0;
+  toSelect.selectedIndex = 1;
+
+  convertUnit();
+}
+
+function convertUnit() {
+  const category = document.getElementById("category").value;
+  const fromUnit = document.getElementById("from-unit").value;
+  const toUnit = document.getElementById("to-unit").value;
+  const value = parseFloat(document.getElementById("value").value);
+
+  if (isNaN(value)) {
+    document.getElementById("result").textContent = "Enter a valid number";
+    return;
+  }
+
+  let result = 0;
+
+  if (category === "temperature") {
+    result = convertTemperature(value, fromUnit, toUnit);
+  } else {
+    const baseValue = value * units[category][fromUnit];
+    result = baseValue / units[category][toUnit];
+  }
+
+  document.getElementById("result").textContent =
+    `${value} ${fromUnit} = ${result.toFixed(4)} ${toUnit}`;
+}
+
+function convertTemperature(value, from, to) {
+  let celsius;
+
+  if (from === "C") celsius = value;
+  else if (from === "F") celsius = (value - 32) * (5 / 9);
+  else if (from === "K") celsius = value - 273.15;
+
+  if (to === "C") return celsius;
+  else if (to === "F") return celsius * 9 / 5 + 32;
+  else if (to === "K") return celsius + 273.15;
+}
+
+document.addEventListener('DOMContentLoaded', populateUnits);
+</script>
+
+{% endblock %}

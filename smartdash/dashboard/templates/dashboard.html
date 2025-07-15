@@ -1,19 +1,45 @@
 {% extends 'base.html' %}
 
-{% block title %}SmartDash - Utility Dashboard{% endblock %}
+{% block title %}Dashboard - SmartDash{% endblock %}
 
 {% block content %}
 <div class="container">
-    <aside class="sidebar">
-        <ul class="sidebar-menu">
-            <li><a href="#"> Tools</a></li>
-            <li><a href="#"> Utilities</a></li>
-            <li><a href="#"> Settings</a></li>
-            <li><a href="/profile"> Profile</a></li>
-        </ul>
-    </aside>
     <main class="main-content">
-        <h1>Welcome to your Dashboard</h1>
-        <p>Here you can choose and edit your SmartDash preferences.</p>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1 style="text-align: center; margin-bottom: 1rem; color:rgb(13, 14, 14); font-size: 3rem;">Welcome to Your Dashboard</h1>
+            </div>
+            <p class="dashboard-intro">Welcome to <strong>SmartDash</strong> — your all-in-one productivity hub. Designed for students, professionals, and everyday users, SmartDash brings together powerful tools like calculators, notepads, converters, and more, all in one easy-to-use interface. Stay organized, get inspired, and simplify your daily tasks — right from your dashboard.</p>
+            <section id="features" class="features">
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>Random Quote Generator</h3>
+                        <p>Get inspired with a random quote every time you visit.</p>
+                        <a href="/quotes/" class="feature-btn">Show Quote</a>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Calculator</h3>
+                        <p>Calculator for basic arithmetic operations.</p>
+                        <a href="/calculator/" class="feature-btn">Use Calculator</a>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Notepad</h3>
+                        <p>Want to take a quick note or save a journal? We got you!</p>
+                        <a href="/notepad/" class="feature-btn">Open</a>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Currency Converter</h3>
+                        <p>Convert between world currencies in real-time.</p>
+                        <a href="#" class="feature-btn">Convert</a>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Unit Converter</h3>
+                        <p>Convert units like length, weight, and temperature.</p>
+                        <a href="/unit_converter/" class="feature-btn">Try Now</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
 </div>
 {% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Calculator - SmartDash{% endblock %}
+
+{% block content %}
+<div class="calculator-container">
+    <h1>Calculator</h1>
+    
+    <div class="calculator">
+        <div class="calculator-display">
+            <input type="text" id="display" readonly>
+        </div>
+        <div class="calculator-buttons">
+            <button class="calc-btn" onclick="clearDisplay()">C</button>
+            <button class="calc-btn" onclick="appendToDisplay('(')">(</button>
+            <button class="calc-btn" onclick="appendToDisplay(')')">)</button>
+            <button class="calc-btn operator" onclick="appendToDisplay('/')">/</button>
+            
+            <button class="calc-btn" onclick="appendToDisplay('7')">7</button>
+            <button class="calc-btn" onclick="appendToDisplay('8')">8</button>
+            <button class="calc-btn" onclick="appendToDisplay('9')">9</button>
+            <button class="calc-btn operator" onclick="appendToDisplay('*')">×</button>
+            
+            <button class="calc-btn" onclick="appendToDisplay('4')">4</button>
+            <button class="calc-btn" onclick="appendToDisplay('5')">5</button>
+            <button class="calc-btn" onclick="appendToDisplay('6')">6</button>
+            <button class="calc-btn operator" onclick="appendToDisplay('-')">-</button>
+            
+            <button class="calc-btn" onclick="appendToDisplay('1')">1</button>
+            <button class="calc-btn" onclick="appendToDisplay('2')">2</button>
+            <button class="calc-btn" onclick="appendToDisplay('3')">3</button>
+            <button class="calc-btn operator" onclick="appendToDisplay('+')">+</button>
+            
+            <button class="calc-btn" onclick="appendToDisplay('0')">0</button>
+            <button class="calc-btn" onclick="appendToDisplay('.')">.</button>
+            <button class="calc-btn" onclick="deleteLastChar()">⌫</button>
+            <button class="calc-btn equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.calculator-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.calculator {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+}
+
+.calculator-display {
+    margin-bottom: 1.5rem;
+}
+
+#display {
+    width: 100%;
+    height: 60px;
+    font-size: 2rem;
+    text-align: right;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.calc-btn {
+    padding: 15px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.calc-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.calc-btn:active {
+    transform: scale(0.95);
+}
+
+.operator {
+    background-color: #f0f0f0;
+    color: var(--primary-color);
+}
+
+.equals {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.equals:hover {
+    background-color: var(--secondary-color);
+}
+</style>
+
+<script>
+function appendToDisplay(value) {
+    document.getElementById('display').value += value;
+}
+
+function clearDisplay() {
+    document.getElementById('display').value = '';
+}
+
+function deleteLastChar() {
+    let display = document.getElementById('display');
+    display.value = display.value.slice(0, -1);
+}
+
+function calculate() {
+    let display = document.getElementById('display');
+    try {
+        display.value = eval(display.value);
+    } catch (error) {
+        display.value = 'Error';
+        setTimeout(() => {
+            display.value = '';
+        }, 1000);
+    }
+}
+</script>
+{% endblock %}

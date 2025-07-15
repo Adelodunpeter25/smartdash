@@ -3,40 +3,97 @@
 {% block title %}SmartDash - Features{% endblock %}
 
 {% block content %}
-    <section id="features" class="features">
-        <h2>Our Features</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <h3>Random Quote Generator</h3>
-                <p>Get inspired with a random quote every time you visit</p>
-                <a href="/quotes/" class="feature-btn">Show Quote</a>
-            </div>
-            <div class="feature-card">
-                <h3>Calculator</h3>
-                <p>Calculator for arithmetic operations</p>
-                <a href="/calculator/" class="feature-btn">Use Calculator</a>
-            </div>
-            <div class="feature-card">
-                <h3>Notepad</h3>
-                <p>Take quick notes or keep a daily journal.</p>
-                <a href="#" class="feature-btn">Open</a>
-            </div>
-            <div class="feature-card">
-                <h3>Calculator</h3>
-                <p>Perform basic arithmetic calculations easily.</p>
-                <a href="#" class="feature-btn">Launch</a>
-            </div>
-            <div class="feature-card">
-                <h3>Currency Converter</h3>
-                <p>Convert between world currencies in real-time.</p>
-                <a href="#" class="feature-btn">Convert</a>
-            </div>
-            <div class="feature-card">
-                <h3>Unit Converter</h3>
-                <p>Convert units like length, weight, and temperature.</p>
-                <a href="#" class="feature-btn">Try Now</a>
-            </div>
+<section id="smartdash-features" class="smartdash-features">
+    <h2 class="smartdash-heading">Our Features</h2>
+    <div class="smartdash-feature-grid">
+        <div class="smartdash-feature-card">
+            <h3 class="smartdash-feature-title">Quote Generator</h3>
+            <p class="smartdash-feature-description">
+                Get instantly motivated with a fresh, randomly generated quote every time you visit. Ideal for daily inspiration or boosting your mood in seconds.
+            </p>
         </div>
-    </section>
-</div>
+        <div class="smartdash-feature-card">
+            <h3 class="smartdash-feature-title">Calculator</h3>
+            <p class="smartdash-feature-description">
+                Perform quick and accurate basic arithmetic operations like addition, subtraction, multiplication, division among others. Perfect for students, professionals, and everyday users.
+            </p>
+        </div>
+        <div class="smartdash-feature-card">
+            <h3 class="smartdash-feature-title">Notepad</h3>
+            <p class="smartdash-feature-description">
+                Quickly jot down thoughts and tasks using a clean, distraction-free easily navigated text editor. Perfect for journaling, drafting ideas, and keeping track of daily notes.
+            </p>
+        </div>
+        <div class="smartdash-feature-card">
+            <h3 class="smartdash-feature-title">Currency Converter</h3>
+            <p class="smartdash-feature-description">
+                Seamlessly convert amounts between multiple world currencies using real-time exchange rates. Useful for travelers, freelancers, and online shoppers dealing with international prices.
+            </p>
+        </div>
+        <div class="smartdash-feature-card">
+            <h3 class="smartdash-feature-title">Unit Converter</h3>
+            <p class="smartdash-feature-description">
+                Convert between different measurement units such as length, weight, temperature, speed, and more. Ideal for students, engineers, and anyone needing fast and precise conversions.
+            </p>
+        </div>
+    </div>
+</section>
+
+<style>
+.smartdash-features {
+    padding: 2rem 0;
+}
+
+.smartdash-heading {
+    text-align: center;
+    margin-top: 1.8rem;
+    margin-bottom: 3rem;
+    color: #000000;
+    font-size: 2.9rem;
+}
+
+.smartdash-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    column-gap: 2rem;
+    row-gap: 2.5rem;
+    margin-bottom: 4rem;
+    padding-left: 1.54rem;
+}
+
+.smartdash-feature-card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 90%;
+    width: 92%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.smartdash-feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.smartdash-feature-title {
+    color:rgb(36, 36, 36);
+    margin-bottom: 0.4rem;
+    font-size: 1.59rem;
+}
+
+.smartdash-feature-description {
+    color:rgb(52, 52, 52);
+    margin-bottom: 1.9rem;
+    line-height: 1.6;
+    font-size: 1.18rem;
+}
+</style>
 {% endblock %}

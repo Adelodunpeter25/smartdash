@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Notepad - SmartDash{% endblock %}
+
+{% block content %}
+<div class="notepad-wrapper">
+    <div class="notepad-container">
+        <h1>Notepad</h1>
+        <div class="notepad-toolbar">
+            <input type="text" id="note-title" placeholder="Note Title" class="notepad-input" />
+            <button onclick="saveNote()" class="notepad-btn">Save</button>
+            <button id="clear-delete-btn" onclick="handleClearOrDelete()" class="notepad-btn">Clear</button>
+            <span id="save-status"></span>
+        </div>
+        <div class="notepad-editor">
+            <textarea id="notepad" placeholder="Start typing your notes here..."></textarea>
+        </div>
+    </div>
+    <div class="notepad-sidebar">
+        <h2>Saved Notes</h2>
+        <ul id="notes-list"></ul>
+    </div>
+</div>
+
+<script>
+let notes = JSON.parse(localStorage.getItem('smartdash_notes')) || {};
+let activeNoteKey = null;
+document.addEventListener('DOMContentLoaded', () => {
+    updateNotesList();
+});
+function saveNote() {
+    const titleInput = document.getElementById('note-title');
+    const noteArea = document.getElementById('notepad');
+    const title = titleInput.value.trim();
+    const content = noteArea.value.trim();
+    if (!title || !content) {
+        alert("Please provide both a title and content.");
+        return;
+    }
+    const timestamp = new Date().toLocaleString();
+    if (activeNoteKey) {e
+        notes[activeNoteKey] = { title, content, updated: timestamp };
+    } else {
+        const key = Date.now().toString();
+        notes[key] = { title, content, created: timestamp };
+    }
+    localStorage.setItem('smartdash_notes', JSON.stringify(notes));
+    document.getElementById('save-status').textContent = 'Saved';
+    document.getElementById('note-title').value = '';
+    document.getElementById('notepad').value = '';
+    activeNoteKey = null;
+    updateNotesList();
+    setTimeout(() => {
+        document.getElementById('save-status').textContent = '';
+    }, 2000);
+}
+function clearNote() {
+    if (confirm("Clear the current note?")) {
+        document.getElementById('note-title').value = '';
+        document.getElementById('notepad').value = '';
+        activeNoteKey = null;
+    }
+}
+function loadNote(key) {
+    const note = notes[key];
+    activeNoteKey = key;
+
+    const titleInput = document.getElementById('note-title');
+    const noteTextarea = document.getElementById('notepad');
+
+    titleInput.value = note.title || '';
+    titleInput.placeholder = note.title ? '' : 'Add a title...';
+    noteTextarea.value = note.content || '';
+    document.getElementById('clear-delete-btn').textContent = 'Delete';
+
+}
+function updateNotesList() {
+    const list = document.getElementById('notes-list');
+    list.innerHTML = '';
+
+    const noteEntries = Object.entries(notes);
+
+    if (noteEntries.length === 0) {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.textContent = '➕ Add Note';
+        btn.onclick = addNewNote;
+        btn.style.all = 'unset';
+        btn.style.cursor = 'pointer';
+        btn.style.color = 'var(--primary-color)';
+        btn.style.fontWeight = 'bold';
+        li.appendChild(btn);
+        list.appendChild(li);
+        return;
+    }
+    noteEntries
+        .sort((a, b) => b[0] - a[0]) 
+        .forEach(([key, note]) => {
+            const li = document.createElement('li');
+            li.textContent = note.title || 'Untitled Note';
+            li.onclick = () => loadNote(key);
+            list.appendChild(li);
+        });
+}
+function addNewNote() {
+    document.getElementById('note-title').value = '';
+    document.getElementById('note-title').placeholder = 'Add a title...';
+    document.getElementById('notepad').value = '';
+    activeNoteKey = null;
+    document.getElementById('note-title').focus();
+    document.getElementById('clear-delete-btn').textContent = activeNoteKey ? 'Delete' : 'Clear';
+
+}
+function handleClearOrDelete() {
+    if (activeNoteKey) {
+        deleteNote(activeNoteKey);
+    } else {
+        clearNote();
+    }
+}
+function deleteNote(key) {
+    if (confirm('Delete this note?')) {
+        delete notes[key];
+        localStorage.setItem('smartdash_notes', JSON.stringify(notes));
+        activeNoteKey = null;
+        addNewNote();
+        updateNotesList();
+    }
+}
+</script>
+{% endblock %}
