@@ -20,10 +20,3 @@ class Utility(models.Model):
     def __str__(self):
         return self.name
         
-class UserPreference(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    utilities = models.ManyToManyField(Utility)
-    theme = models.CharField(max_length=20, default='light')
-    
-    def __str__(self):
-        return f"{self.user.username}'s preferences"
