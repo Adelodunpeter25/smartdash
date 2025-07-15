@@ -213,11 +213,11 @@ body {
 .cta-button {
     background-color: var(--primary-color);
     color: var(--background-color);
-    padding: 1.3rem 2.5rem;
+    padding: 1.2rem 2.45rem;
     text-decoration: none;
-    border-radius:12px;
+    border-radius:7px;
     font-weight: bold;
-    font-size: 1.23rem;
+    font-size: 1.53rem;
     cursor: pointer;
     transition: transform 0.3s, background-color 0.3s;
     display: inline-block;
@@ -225,11 +225,11 @@ body {
 .btn-primary {
     background-color: var(--primary-color);
     color: var(--background-color);
-    padding: 1.3rem 2.5rem;
+    padding: 1.2rem 2.4rem;
     text-decoration: none;
     border-radius:7px;
     font-weight: bold;
-    font-size: 1.59rem;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: transform 0.3s, background-color 0.3s;
     display: inline-block;
@@ -296,40 +296,53 @@ body {
 .features h2 {
     text-align: center;
     margin-bottom: 3rem;
-    color: #2c3e50;
+    color: #000000;
     font-size: 2.5rem;
 }
 
 .feature-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    column-gap: 2rem;
+    row-gap: 2.5rem;
     margin-bottom: 4rem;
+    padding-left: 1.54rem;
 }
 
 .feature-card {
-    background: var(--background-color);
+    background: var(--background-color, #ffffff);
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
-    transition: transform 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    width: 92%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
 }
 
+
 .feature-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
 }
 
 .feature-card h3 {
-    color: #2c3e50;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+    color: #202020;
+    margin-bottom: 0.8rem;
+    font-size: 1.53rem;
 }
 
 .feature-card p {
-    color: #7f8c8d;
+    color: #414141;
     margin-bottom: 1.5rem;
     line-height: 1.6;
+    font-size: 1.1rem;
 }
 
 .quote-container {
@@ -430,6 +443,10 @@ body {
     border-radius: 5px;
     font-size: 1rem;
 }
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
 
 .auth-link {
     text-align: center;
@@ -448,7 +465,7 @@ body {
 }
 
 .profile-container {
-    height: 100vh;
+    height: 70vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -464,6 +481,7 @@ body {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     max-width: 400px;
+    max-height: 600px;
     width: 100%;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -482,8 +500,8 @@ body {
 }
 
 .avatar {
-    width: 140px;
-    height: 140px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     border-radius: 50%;
     border: 3px solid #031263;
@@ -515,7 +533,7 @@ body {
 }
 
 .logout-btn:hover {
-    background-color: #a22727;
+    background-color: #c73535;
     transform: translateY(-2px);
 }
 .logout {
