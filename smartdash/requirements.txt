@@ -2,3 +2,8 @@ asgiref==3.9.1
 Django==5.2.4
 qrcode==8.2
 sqlparse==0.5.3
+certifi==2025.7.14
+charset-normalizer==3.4.2
+idna==3.10
+requests==2.32.4
+urllib3==2.5.0
