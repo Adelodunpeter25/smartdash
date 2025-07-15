@@ -19,13 +19,14 @@
             <span></span>
         </div>
         <ul class="nav-menu">
-                <li><a href={% url 'utilities' %}>Features</a></li> 
             {% if user.is_authenticated %}
                 <li><a href="/dashboard">Dashboard</a></li>
                 <li><a href="/logout">Logout</a></li>
                 <li><a href="/profile">Profile</a></li>
             {% else %}
+                <li><a href={% url 'utilities' %}>Features</a></li> 
                 <li><a href="/login">Login</a></li>
+                
             {% endif %}
         </ul>
     </nav>

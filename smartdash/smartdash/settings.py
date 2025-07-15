@@ -25,11 +25,10 @@ SECRET_KEY = 'django-insecure-%fqgyt410(q!m)xc_ddj(e_a$r8n4l$7t=hpodzs(au@^rcc$1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,7 +40,7 @@ INSTALLED_APPS = [
 ]
 
 # Session settings
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30 
 SESSION_SAVE_EVERY_REQUEST = True
 
 MIDDLEWARE = [
