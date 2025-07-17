@@ -470,6 +470,16 @@ body {
     text-decoration: none;
 }
 
+.login-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    text-align: center;
+}
+
 .remember-me {
     display: flex;
     align-items: center;

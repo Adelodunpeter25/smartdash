@@ -7,6 +7,14 @@
     <div class="auth-form">
         <h2>Login to SmartDash</h2>
         
+        {% if messages %}
+        <div class="login-error">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
