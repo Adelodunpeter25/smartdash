@@ -21,8 +21,9 @@ body {
 .navbar {
     background-color: var(--primary-color);
     color: var(--background-color);
-    padding: 1rem 2rem;
+    padding: 1.1rem 2rem;
     display: flex;
+    height: 60px;
     justify-content: space-between;
     align-items: center;
     position: fixed;
@@ -403,7 +404,7 @@ body {
 .site-footer {
     text-align: center;
     padding: 1rem 0;
-    background-color: #faf8f8;
+    background-color: #f3f3f300;
     color: rgb(31, 29, 29);
     font-size: 0.9rem;
     margin-top: 3rem;

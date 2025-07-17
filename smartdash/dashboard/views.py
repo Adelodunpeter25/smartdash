@@ -79,3 +79,7 @@ def notepad_view(request):
 @login_required
 def unit_converter_view(request):
     return render(request, 'unit_converter.html')
+
+@login_required
+def currency_converter_view(request):
+    return render(request, 'currency_converter.html')
