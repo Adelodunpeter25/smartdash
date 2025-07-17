@@ -1,131 +1,198 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Notepad - SmartDash{% endblock %}
+{% block title %}SmartDash - Notepad{% endblock %}
 
 {% block content %}
-<div class="notepad-wrapper">
-    <div class="notepad-container">
-        <h1>Notepad</h1>
-        <div class="notepad-toolbar">
-            <input type="text" id="note-title" placeholder="Note Title" class="notepad-input" />
-            <button onclick="saveNote()" class="notepad-btn">Save</button>
-            <button id="clear-delete-btn" onclick="handleClearOrDelete()" class="notepad-btn">Clear</button>
-            <span id="save-status"></span>
-        </div>
-        <div class="notepad-editor">
-            <textarea id="notepad" placeholder="Start typing your notes here..."></textarea>
-        </div>
+<style>
+  :root {
+    --primary-color: #000000;       /* Black for navbar */
+    --accent-color: #000000;        /* Optional: for focused box-shadow */
+    --light-color: #ffffff;         /* White background */
+    --dark-color: #000000;          /* Text color */
+    --warning-color: #ff0000;       /* Red for warning buttons */
+  }
+
+  body {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    margin: 5rem auto;
+  }
+
+  header {
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  button {
+    background-color: var(--light-color);
+    border: 1px solid var(--dark-color);
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: var(--dark-color);
+  }
+
+  button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-save {
+    background-color: var(--dark-color);
+    color: var(--light-color);
+  }
+
+  .btn-new {
+    background-color: var(--warning-color);
+    color: var(--light-color);
+  }
+
+  main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+  }
+
+  .editor-container {
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
+    width: 100vh;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .editor {
+    flex: 1;
+    background-color: white;
+    padding: 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    border: none;
+    resize: none;
+    outline: none;
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--dark-color);
+  }
+
+  .editor:focus {
+    box-shadow: inset 0 0 0 2px var(--accent-color);
+  }
+
+  .status-bar {
+    background-color: #e9ecef;
+    color: var(--dark-color);
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: var(--dark-color);
+  }
+
+  @media (max-width: 768px) {
+    header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .toolbar {
+      width: 100%;
+      justify-content: center;
+    }
+
+    main {
+      padding: 1rem;
+    }
+
+    .editor-container {
+      height: 65vh;
+    }
+  }
+</style>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+        viewBox="0 0 16 16">
+        <path
+          d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5 6h6a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm3 3h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1z" />
+      </svg>
     </div>
-    <div class="notepad-sidebar">
-        <h2>Saved Notes</h2>
-        <ul id="notes-list"></ul>
+    <h1 class="app-title">Advanced Notepad</h1>
+  </div>
+  <div class="toolbar">
+    <button id="newBtn" class="btn-new">New</button>
+    <button id="saveBtn" class="btn-save">Save</button>
+  </div>
+</header>
+
+<main>
+  <div class="editor-container">
+    <textarea id="editor" class="editor" placeholder="Start typing here..."></textarea>
+    <div class="status-bar">
+      <div class="file-info">
+        <span>Document</span>
+        <span id="fileName">Notes.txt</span>
+      </div>
     </div>
-</div>
+  </div>
+</main>
 
 <script>
-let notes = JSON.parse(localStorage.getItem('smartdash_notes')) || {};
-let activeNoteKey = null;
-document.addEventListener('DOMContentLoaded', () => {
-    updateNotesList();
-});
-function saveNote() {
-    const titleInput = document.getElementById('note-title');
-    const noteArea = document.getElementById('notepad');
-    const title = titleInput.value.trim();
-    const content = noteArea.value.trim();
-    if (!title || !content) {
-        alert("Please provide both a title and content.");
-        return;
-    }
-    const timestamp = new Date().toLocaleString();
-    if (activeNoteKey) {e
-        notes[activeNoteKey] = { title, content, updated: timestamp };
-    } else {
-        const key = Date.now().toString();
-        notes[key] = { title, content, created: timestamp };
-    }
-    localStorage.setItem('smartdash_notes', JSON.stringify(notes));
-    document.getElementById('save-status').textContent = 'Saved';
-    document.getElementById('note-title').value = '';
-    document.getElementById('notepad').value = '';
-    activeNoteKey = null;
-    updateNotesList();
-    setTimeout(() => {
-        document.getElementById('save-status').textContent = '';
-    }, 2000);
-}
-function clearNote() {
-    if (confirm("Clear the current note?")) {
-        document.getElementById('note-title').value = '';
-        document.getElementById('notepad').value = '';
-        activeNoteKey = null;
-    }
-}
-function loadNote(key) {
-    const note = notes[key];
-    activeNoteKey = key;
+  const editor = document.getElementById('editor');
+  const newBtn = document.getElementById('newBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const fileName = document.getElementById('fileName');
 
-    const titleInput = document.getElementById('note-title');
-    const noteTextarea = document.getElementById('notepad');
-
-    titleInput.value = note.title || '';
-    titleInput.placeholder = note.title ? '' : 'Add a title...';
-    noteTextarea.value = note.content || '';
-    document.getElementById('clear-delete-btn').textContent = 'Delete';
-
-}
-function updateNotesList() {
-    const list = document.getElementById('notes-list');
-    list.innerHTML = '';
-
-    const noteEntries = Object.entries(notes);
-
-    if (noteEntries.length === 0) {
-        const li = document.createElement('li');
-        const btn = document.createElement('button');
-        btn.textContent = '➕ Add Note';
-        btn.onclick = addNewNote;
-        btn.style.all = 'unset';
-        btn.style.cursor = 'pointer';
-        btn.style.color = 'var(--primary-color)';
-        btn.style.fontWeight = 'bold';
-        li.appendChild(btn);
-        list.appendChild(li);
-        return;
+  newBtn.addEventListener('click', () => {
+    if (editor.value && !confirm('Are you sure you want to create a new document? Unsaved changes will be lost.')) {
+      return;
     }
-    noteEntries
-        .sort((a, b) => b[0] - a[0]) 
-        .forEach(([key, note]) => {
-            const li = document.createElement('li');
-            li.textContent = note.title || 'Untitled Note';
-            li.onclick = () => loadNote(key);
-            list.appendChild(li);
-        });
-}
-function addNewNote() {
-    document.getElementById('note-title').value = '';
-    document.getElementById('note-title').placeholder = 'Add a title...';
-    document.getElementById('notepad').value = '';
-    activeNoteKey = null;
-    document.getElementById('note-title').focus();
-    document.getElementById('clear-delete-btn').textContent = activeNoteKey ? 'Delete' : 'Clear';
+    editor.value = '';
+    fileName.textContent = 'Notes.txt';
+    updateWordCount();
+  });
 
-}
-function handleClearOrDelete() {
-    if (activeNoteKey) {
-        deleteNote(activeNoteKey);
-    } else {
-        clearNote();
+  saveBtn.addEventListener('click', () => {
+    const text = editor.value;
+    if (!text) {
+      alert('No content to save!');
+      return;
     }
-}
-function deleteNote(key) {
-    if (confirm('Delete this note?')) {
-        delete notes[key];
-        localStorage.setItem('smartdash_notes', JSON.stringify(notes));
-        activeNoteKey = null;
-        addNewNote();
-        updateNotesList();
-    }
-}
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName.textContent || 'Notes.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  editor.addEventListener('input', updateWordCount);
+  updateWordCount();
 </script>
 {% endblock %}
