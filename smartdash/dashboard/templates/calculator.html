@@ -42,9 +42,12 @@
 <style>
 .calculator-container {
     max-width: 500px;
-    height: 300%;
-    margin: 2rem auto;
+    margin: 6rem auto;
     padding: 2rem;
+    font-size: 1.3rem;
+}
+.calculator-container h1 {
+    margin-bottom: 2rem;
 }
 
 .calculator {
@@ -52,6 +55,7 @@
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     padding: 1.5rem;
+    margin-bottom: 5rem;
 }
 
 .calculator-display {
@@ -134,5 +138,21 @@ function calculate() {
         }, 1000);
     }
 }
+
+document.addEventListener("keydown", function(event) {
+    const key = event.key;
+    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','+','-','*','/','(',')'];
+
+    if (allowedKeys.includes(key)) {
+        appendToDisplay(key);
+    } else if (key === 'Enter') {
+        event.preventDefault();
+        calculate();
+    } else if (key === 'Backspace') {
+        deleteLastChar();
+    } else if (key === 'Escape') {
+        clearDisplay();
+    }
+});
 </script>
 {% endblock %}
