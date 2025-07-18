@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Weather - SmartDash{% endblock %}
+
+{% block content %}
+<style>
+body {
+  background: #fff;
+  color: #111;
+}
+.weather-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(40,40,40,0.18);
+  padding: 2.5rem 2rem;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  color: #111;
+}
+.weather-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.weather-form input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  font-size: 1rem;
+  color: #111;
+  background: #fff;
+}
+.weather-form button {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.weather-form button:hover {
+  background: #444;
+}
+.weather-result {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #111;
+}
+.weather-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem auto;
+}
+.weather-temp {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #222;
+}
+.weather-desc {
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+.weather-location {
+  font-size: 1.1rem;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+</style>
+<div class="weather-container">
+  <form class="weather-form" onsubmit="getWeather(event)">
+    <input type="text" id="cityInput" placeholder="Enter city (e.g. Lagos)" required />
+    <button type="submit">Get Weather</button>
+  </form>
+  <div id="weatherResult" class="weather-result"></div>
+</div>
+<script>
+const apiKey = 'b3853997b021cfb4945dfc6d3adfa060';
+
+function getWeather(event) {
+  event.preventDefault();
+  const city = document.getElementById('cityInput').value.trim();
+  const resultDiv = document.getElementById('weatherResult');
+  if (!city) return;
+  resultDiv.innerHTML = 'Loading...';
+  fetch(`https://openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.cod !== 200) {
+        resultDiv.innerHTML = `<span style='color:red;'>City not found.</span>`;
+        return;
+      }
+      resultDiv.innerHTML = `
+        <img class='weather-icon' src='https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png' alt='icon'>
+        <div class='weather-temp'>${Math.round(data.main.temp)}°C</div>
+        <div class='weather-desc'>${data.weather[0].description.replace(/\b\w/g, l => l.toUpperCase())}</div>
+        <div class='weather-location'>${data.name}, ${data.sys.country}</div>
+        <div>Humidity: ${data.main.humidity}% | Wind: ${data.wind.speed} m/s</div>
+      `;
+    })
+    .catch(() => {
+      resultDiv.innerHTML = `<span style='color:red;'>Error fetching weather.</span>`;
+    });
+}
+</script>
+{% endblock %}

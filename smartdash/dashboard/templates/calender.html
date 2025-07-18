@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendar - SmartDash{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: #fff;
+    color: #111;
+  }
+  .calendar-container {
+    max-width: 800px;
+    margin: 3rem auto 0 auto;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(40,40,40,0.18);
+    padding: 3.5rem 2.5rem 2.5rem 2.5rem;
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+    color: #111;
+  }
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .calendar-header button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #222;
+    cursor: pointer;
+    padding: 0 0.5rem;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+  .calendar-header button:hover {
+    background: #444;
+    color: #fff;
+  }
+  .calendar-caption {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: 0.02em;
+    text-align: center;
+    flex: 1;
+  }
+  .calendar {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 1rem 0.5rem;
+    background: none;
+    font-size: 1.25rem;
+  }
+  .calendar th {
+    color: #444;
+    font-weight: 500;
+    font-size: 1.1rem;
+    background: none;
+    border: none;
+    padding-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .calendar td {
+    background: #fff;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 0.7rem 0.2rem;
+    font-size: 1.1rem;
+    color: #111;
+    position: relative;
+    transition: background 0.2s;
+    min-width: 3rem;
+    height: 3rem;
+  }
+  .calendar td.today {
+    background: #222;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(40,40,40,0.10);
+  }
+  .calendar td.event {
+    background: #f3f3f3;
+    color: #222;
+    font-weight: bold;
+    position: relative;
+    border: 2px solid #444;
+  }
+  .calendar td.event::after {
+    content: '';
+    display: block;
+    width: 7px;
+    height: 7px;
+    background: #444;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    bottom: 7px;
+    transform: translateX(-50%);
+  }
+  .calendar td.today.event {
+    background: linear-gradient(135deg, #222 70%, #f3f3f3 100%);
+    color: #fff;
+  }
+  .calendar td.empty {
+    background: none;
+    border: none;
+  }
+  .calendar td:hover:not(.empty) {
+    background: #444;
+    color: #fff;
+    cursor: pointer;
+  }
+  .calendar-footer {
+    margin-top: 2rem;
+    text-align: left;
+    color: #111;
+  }
+  .calendar-footer ul {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0 0 0;
+    color: #111;
+  }
+</style>
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button onclick="changeMonth(-1)" title="Previous Month">&#60;</button>
+    <div class="calendar-caption" id="calendar-caption"></div>
+    <button onclick="changeMonth(1)" title="Next Month">&#62;</button>
+  </div>
+  <table class="calendar" id="calendar-table">
+
+  </table>
+  <div class="calendar-footer">
+    <strong>Major Events:</strong>
+    <ul id="event-list">
+
+    </ul>
+  </div>
+</div>
+<script>
+const majorEvents = [
+  { date: '2025-01-01', name: "New Year's Day" },
+  { date: '2025-02-14', name: "Valentine's Day" },
+  { date: '2025-04-18', name: 'Good Friday' },
+  { date: '2025-04-21', name: 'Easter Monday' },
+  { date: '2025-05-01', name: "Workers' Day" },
+  { date: '2025-05-27', name: "Children's Day" },
+  { date: '2025-06-12', name: "Democracy Day" },
+  { date: '2025-10-01', name: 'Independence Day' },
+  { date: '2025-12-24', name: 'Christmas Eve' },
+  { date: '2025-12-25', name: 'Christmas Day' },
+  { date: '2025-12-26', name: 'Boxing Day' },
+  { date: '2025-12-31', name: 'New Year’s Eve' }
+];
+
+function renderCalendar(year, month) {
+  const today = new Date();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDay = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+  const calendar = document.getElementById('calendar-table');
+  const caption = document.getElementById('calendar-caption');
+  const eventList = document.getElementById('event-list');
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  caption.innerHTML = `
+    <button onclick="changeMonth(-1)">&lt;</button>
+    ${monthNames[month]} ${year}
+    <button onclick="changeMonth(1)">&gt;</button>
+  `;
+
+  let html = '<tr>';
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for (let d of days) html += `<th>${d}</th>`;
+  html += '</tr><tr>';
+  for (let i = 0; i < startDay; i++) html += '<td></td>';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+    const event = majorEvents.find(e => e.date === dateStr);
+    let cls = '';
+    if (isToday && event) cls = 'today event';
+    else if (isToday) cls = 'today';
+    else if (event) cls = 'event';
+    html += `<td class=\"${cls}\">${day}</td>`;
+    if ((startDay + day) % 7 === 0 && day !== daysInMonth) html += '</tr><tr>';
+  }
+  const remaining = (startDay + daysInMonth) % 7;
+  for (let i = 0; i < (7 - remaining) % 7; i++) html += '<td class=\"empty\"></td>';
+  html += '</tr>';
+  calendar.innerHTML = html;
+
+  eventList.innerHTML = '';
+  for (const event of majorEvents) {
+    const eventDate = new Date(event.date);
+    if (eventDate.getFullYear() === year && eventDate.getMonth() === month) {
+      const li = document.createElement('li');
+      li.textContent = `${eventDate.getDate()} ${monthNames[month]}: ${event.name}`;
+      eventList.appendChild(li);
+    }
+  }
+}
+
+let currentMonth = (new Date()).getMonth();
+let currentYear = (new Date()).getFullYear();
+function changeMonth(offset) {
+  currentMonth += offset;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  } else if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  renderCalendar(currentYear, currentMonth);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderCalendar(currentYear, currentMonth);
+});
+</script>
+{% endblock %}

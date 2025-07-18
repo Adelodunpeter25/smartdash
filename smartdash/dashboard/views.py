@@ -83,3 +83,13 @@ def unit_converter_view(request):
 @login_required
 def currency_converter_view(request):
     return render(request, 'currency_converter.html')
+
+@login_required
+def calendar_view(request):
+    return render(request, 'calender.html')
+
+from django.views.decorators.csrf import ensure_csrf_cookie
+@login_required
+@ensure_csrf_cookie
+def weather_view(request):
+    return render(request, 'weather.html')

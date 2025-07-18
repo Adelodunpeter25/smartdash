@@ -14,4 +14,6 @@ urlpatterns = [
     path('notepad/', views.notepad_view, name='notepad'),
     path('unit_converter/', views.unit_converter_view, name='unit_converter'),
     path('currency_converter/', views.currency_converter_view, name='currency_converter'),
+    path('calendar/', views.calendar_view, name='calendar'),
+    path('weather/', views.weather_view, name='weather')
 ]
