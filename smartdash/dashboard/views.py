@@ -93,3 +93,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 @ensure_csrf_cookie
 def weather_view(request):
     return render(request, 'weather.html')
+
+@login_required
+def clock_view(request):
+    return render(request, 'clock.html')

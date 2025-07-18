@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Clock - SmartDash{% endblock %}
+
+{% block content %}
+<style>
+.clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+}
+.clock-card {
+    background: #fff;
+    color: #111;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(40,40,40,0.18);
+    padding: 2.5rem 2rem;
+    font-size: 2.5rem;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    margin-bottom: 2rem;
+    min-width: 260px;
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+@media (max-width: 600px) {
+    .clock-card {
+        font-size: 1.5rem;
+        padding: 1.5rem 0.5rem;
+        min-width: 0;
+    }
+}
+</style>
+<div class="clock-container">
+    <div class="clock-card" id="clock"></div>
+</div>
+<script>
+function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+{% endblock %}
