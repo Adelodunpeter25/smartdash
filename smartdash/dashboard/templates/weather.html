@@ -4,6 +4,41 @@
 
 {% block content %}
 <style>
+.weather-container {
+  margin-bottom: 2.5rem;
+}
+p {
+  margin: 1.2em 0;
+}
+@media (max-width: 600px) {
+  .weather-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.2rem;
+    border-radius: 10px;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .weather-form {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .weather-form input, .weather-form button {
+    width: 100%;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  .weather-result {
+    font-size: 1rem;
+    word-break: break-word;
+  }
+  .weather-temp {
+    font-size: 2rem;
+  }
+  .weather-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
 body {
   background: #fff;
   color: #111;
@@ -49,16 +84,19 @@ body {
   text-align: center;
   margin-top: 1.5rem;
   color: #111;
-}
-.weather-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1rem auto;
-}
-.weather-temp {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #222;
+  .weather-container {
+    max-width: 400px;
+    margin: 3rem auto 2.5rem auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(40,40,40,0.18);
+    padding: 2.5rem 2rem;
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 .weather-desc {
   font-size: 1.2rem;
@@ -79,32 +117,51 @@ body {
   <div id="weatherResult" class="weather-result"></div>
 </div>
 <script>
-const apiKey = 'b3853997b021cfb4945dfc6d3adfa060';
-
-function getWeather(event) {
+async function getWeather(event) {
   event.preventDefault();
   const city = document.getElementById('cityInput').value.trim();
   const resultDiv = document.getElementById('weatherResult');
   if (!city) return;
   resultDiv.innerHTML = 'Loading...';
-  fetch(`https://openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.cod !== 200) {
-        resultDiv.innerHTML = `<span style='color:red;'>City not found.</span>`;
-        return;
-      }
-      resultDiv.innerHTML = `
-        <img class='weather-icon' src='https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png' alt='icon'>
-        <div class='weather-temp'>${Math.round(data.main.temp)}°C</div>
-        <div class='weather-desc'>${data.weather[0].description.replace(/\b\w/g, l => l.toUpperCase())}</div>
-        <div class='weather-location'>${data.name}, ${data.sys.country}</div>
-        <div>Humidity: ${data.main.humidity}% | Wind: ${data.wind.speed} m/s</div>
-      `;
-    })
-    .catch(() => {
-      resultDiv.innerHTML = `<span style='color:red;'>Error fetching weather.</span>`;
-    });
+  try {
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) {
+      resultDiv.innerHTML = `<span style='color:red;'>City not found.</span>`;
+      return;
+    }
+    const { latitude, longitude, name, country } = geoData.results[0];
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,rain,is_day&hourly=rain,temperature_2m&timezone=auto&forecast_days=3&past_days=1&daily=rain_sum,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,weather_code&wind_speed_unit=ms`);
+    const weatherData = await weatherRes.json();
+    if (!weatherData.current) {
+      resultDiv.innerHTML = `<span style='color:red;'>Weather data not available.</span>`;
+      return;
+    }
+    const temp = weatherData.current.temperature_2m;
+    const humidity = weatherData.current.relative_humidity_2m;
+    const rain = weatherData.current.rain;
+    const isDay = weatherData.current.is_day ? 'Day' : 'Night';
+    const daily = weatherData.daily || {};
+    const tmax = daily.temperature_2m_max ? daily.temperature_2m_max[0] : '-';
+    const tmin = daily.temperature_2m_min ? daily.temperature_2m_min[0] : '-';
+    const rainSum = daily.rain_sum ? daily.rain_sum[0] : '-';
+    const sunrise = daily.sunrise ? new Date(daily.sunrise[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-';
+    const sunset = daily.sunset ? new Date(daily.sunset[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-';
+    const daylight = daily.daylight_duration ? (Math.round(daily.daylight_duration[0]/3600*10)/10) + ' hrs' : '-';
+    resultDiv.innerHTML = `
+      <div class='weather-temp'>🌡️ ${Math.round(temp)}°C</div>
+      <div class='weather-desc'>💧 Humidity: ${humidity}%</div>
+      <div class='weather-desc'>🌧️ Rain (now): ${rain} mm</div>
+      <div class='weather-desc'>🔺 Max: ${tmax}°C &nbsp;|&nbsp; 🔻 Min: ${tmin}°C</div>
+      <div class='weather-desc'>☔ Rain (today): ${rainSum} mm</div>
+      <div class='weather-desc'>🌅 Sunrise: ${sunrise} &nbsp;|&nbsp; 🌇 Sunset: ${sunset}</div>
+      <div class='weather-desc'>🕒 Daylight: ${daylight}</div>
+      <div class='weather-desc'>${isDay === 'Day' ? '🌞 Day' : '🌙 Night'}</div>
+      <div class='weather-location'>📍 ${name}, ${country}</div>
+    `;
+  } catch (e) {
+    resultDiv.innerHTML = `<span style='color:red;'>Error fetching weather.</span>`;
+  }
 }
 </script>
 {% endblock %}

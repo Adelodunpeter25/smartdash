@@ -4,6 +4,86 @@
 
 {% block content %}
 <style>
+  @media (max-width: 600px) {
+    .calendar-container {
+      max-width: 98vw;
+      padding: 1rem 0.2rem;
+      border-radius: 10px;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .calendar-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .calendar-caption {
+      font-size: 1.1rem;
+    }
+    .calendar-table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+    .calendar {
+      min-width: 500px;
+      font-size: 0.9rem;
+    }
+    .calendar th, .calendar td {
+      min-width: 1.7rem;
+      height: 2rem;
+      padding: 0.3rem 0.1rem;
+    }
+    .calendar th {
+      padding-bottom: 0.2rem;
+    }
+    .calendar-footer {
+      font-size: 0.95rem;
+    }
+    .calendar-tabs {
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .calendar-tab {
+      width: 100%;
+      padding: 0.4rem 0.5rem;
+      font-size: 1rem;
+    }
+  }
+  @media (max-width: 600px) {
+    .calendar-container {
+      max-width: 98vw;
+      padding: 1rem 0.2rem;
+      border-radius: 10px;
+    }
+    .calendar-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .calendar-caption {
+      font-size: 1.1rem;
+    }
+    .calendar th, .calendar td {
+      font-size: 0.9rem;
+      min-width: 1.7rem;
+      height: 2rem;
+      padding: 0.3rem 0.1rem;
+    }
+    .calendar th {
+      padding-bottom: 0.2rem;
+    }
+    .calendar-footer {
+      font-size: 0.95rem;
+    }
+    .calendar-tabs {
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .calendar-tab {
+      width: 100%;
+      padding: 0.4rem 0.5rem;
+      font-size: 1rem;
+    }
+  }
   body {
     background: #fff;
     color: #111;
@@ -129,9 +209,10 @@
     <div class="calendar-caption" id="calendar-caption"></div>
     <button onclick="changeMonth(1)" title="Next Month">&#62;</button>
   </div>
-  <table class="calendar" id="calendar-table">
-
-  </table>
+  <div class="calendar-table-wrapper">
+    <table class="calendar" id="calendar-table">
+    </table>
+  </div>
   <div class="calendar-footer">
     <strong>Major Events:</strong>
     <ul id="event-list">
