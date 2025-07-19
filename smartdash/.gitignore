@@ -1,5 +1,5 @@
 .qodo
-venv
+venv/
 .env
 .DS_Store
 __pychache__
