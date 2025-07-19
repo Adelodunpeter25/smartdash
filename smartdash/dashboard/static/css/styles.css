@@ -776,9 +776,9 @@ select:focus {
     }
 
 .dashboard-container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 2rem auto;
-    padding: 0 2rem;
+    padding: 0 auto;
 }
 
 .settings-link {
