@@ -7,34 +7,32 @@
   <div class="converter-container">
     <h2>Currency Converter</h2>
 
-    <div class="form-group">
-      <label for="amount">Amount:</label>
-      <input type="number" id="amount" placeholder="Enter amount" />
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="amount" placeholder="Enter amount" value="{{ amount|default:'' }}" required />
+      </div>
+      <div class="form-group">
+        <label for="from-currency">From:</label>
+        <input type="text" id="from-search" placeholder="Search currency..." oninput="filterCurrencyOptions('from-currency', 'from-search')" style="margin-bottom:0.5rem;" />
+        <select id="from-currency" name="from_currency"></select>
+      </div>
+      <div class="form-group">
+        <label for="to-currency">To:</label>
+        <input type="text" id="to-search" placeholder="Search currency..." oninput="filterCurrencyOptions('to-currency', 'to-search')" style="margin-bottom:0.5rem;" />
+        <select id="to-currency" name="to_currency"></select>
+      </div>
+      <button type="submit">Convert</button>
+    </form>
+
+    <div class="result" id="result">
+      {% if result %}
+          <span>{{ result }}</span>
+      {% elif error %}
+          <span style="color:red;">{{ error }}</span>
+      {% endif %}
     </div>
-
-    <div class="form-group">
-      <label for="from-currency">From:</label>
-      <select id="from-currency">
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="NGN">NGN</option>
-        <option value="GBP">GBP</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="to-currency">To:</label>
-      <select id="to-currency">
-        <option value="NGN">NGN</option>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="GBP">GBP</option>
-      </select>
-    </div>
-
-    <button onclick="convertCurrency()">Convert</button>
-
-    <div class="result" id="result"></div>
   </div>
 </div>
 
@@ -102,37 +100,47 @@
 </style>
 
 <script>
-  const exchangeRates = {
-    USD: { USD: 1, NGN: 1527.62, EUR: 0.86, GBP: 0.75 },
-    NGN: { USD: 1 / 1527.62, NGN: 1, EUR: 0.86 / 1527.62, GBP: 0.75 / 1527.62 },
-    EUR: { USD: 1 / 0.86, NGN: 1527.62 / 0.86, EUR: 1, GBP: 0.87 },
-    GBP: { USD: 1 / 0.75, NGN: 1527.62 / 0.75, EUR: 1 / 0.87, GBP: 1 }
-  };
+const currencyData = [
+  { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸' },
+  { code: 'EUR', name: 'Euro', symbol: '€', flag: '🇪🇺' },
+  { code: 'NGN', name: 'Nigerian Naira', symbol: '₦', flag: '🇳🇬' },
+  { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧' },
+  { code: 'CAD', name: 'Canadian Dollar', symbol: 'CA$', flag: '🇨🇦' },
+  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', flag: '🇦🇺' },
+  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', flag: '🇨🇳' }
+];
 
-  function convertCurrency() {
-    const amount = parseFloat(document.getElementById("amount").value);
-    const from = document.getElementById("from-currency").value;
-    const to = document.getElementById("to-currency").value;
+function populateCurrencySelect(selectId) {
+  const select = document.getElementById(selectId);
+  select.innerHTML = '';
+  currencyData.forEach(curr => {
+    const option = document.createElement('option');
+    option.value = curr.code;
+    option.innerHTML = `${curr.flag} ${curr.symbol} ${curr.code} - ${curr.name}`;
+    select.appendChild(option);
+  });
+}
 
-    const resultField = document.getElementById("result");
-
-    if (isNaN(amount) || amount <= 0) {
-      resultField.innerText = "Please enter a valid amount.";
-      return;
+function filterCurrencyOptions(selectId, searchId) {
+  const select = document.getElementById(selectId);
+  const search = document.getElementById(searchId).value.toLowerCase();
+  select.innerHTML = '';
+  currencyData.forEach(curr => {
+    if (
+      curr.code.toLowerCase().includes(search) ||
+      curr.name.toLowerCase().includes(search)
+    ) {
+      const option = document.createElement('option');
+      option.value = curr.code;
+      option.innerHTML = `${curr.flag} ${curr.symbol} ${curr.code} - ${curr.name}`;
+      select.appendChild(option);
     }
+  });
+}
 
-    const rate = exchangeRates[from][to];
-    const converted = amount * rate;
-
-    const formatter = new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    });
-
-    const formattedAmount = formatter.format(amount);
-    const formattedConverted = formatter.format(converted);
-
-    resultField.innerText = `${formattedAmount} ${from} = ${formattedConverted} ${to}`;
-  }
+document.addEventListener('DOMContentLoaded', function() {
+  populateCurrencySelect('from-currency');
+  populateCurrencySelect('to-currency');
+});
 </script>
 {% endblock %}

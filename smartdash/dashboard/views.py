@@ -1,11 +1,18 @@
 import random
+import os
+import requests
+from django.conf import settings
+from dotenv import load_dotenv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.cache import cache
 from .models import Quote
+
+load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
 
 
 def landing_page(request):
@@ -84,7 +91,39 @@ def unit_converter_view(request):
 
 @login_required
 def currency_converter_view(request):
-    return render(request, 'currency_converter.html')
+    result = None
+    error = None
+    amount = None
+    from_currency = None
+    to_currency = None
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        from_currency = request.POST.get('from_currency')
+        to_currency = request.POST.get('to_currency')
+        try:
+            api_key = os.getenv('CURRENCY_CONVERTER_API_KEY')
+            cache_key = f"exchange_rates_{from_currency}"
+            data = cache.get(cache_key)
+            if not data:
+                url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/{from_currency}"
+                response = requests.get(url)
+                data = response.json()
+                cache.set(cache_key, data, timeout=3600)
+            if data.get('result') == 'success' and data['conversion_rates'].get(to_currency):
+                rate = data['conversion_rates'][to_currency]
+                converted = float(amount) * rate
+                result = f"{float(amount):,.2f} {from_currency} = {converted:,.2f} {to_currency}"
+            else:
+                error = f"Exchange rate for {from_currency} to {to_currency} not available."
+        except Exception as e:
+            error = "Error fetching exchange rate."
+    return render(request, 'currency_converter.html', {
+        'result': result,
+        'error': error,
+        'amount': amount,
+        'from_currency': from_currency,
+        'to_currency': to_currency,
+    })
 
 @login_required
 def calendar_view(request):

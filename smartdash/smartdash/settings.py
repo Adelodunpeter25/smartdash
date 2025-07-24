@@ -43,6 +43,13 @@ INSTALLED_APPS = [
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30 
 SESSION_SAVE_EVERY_REQUEST = True
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache'),
+    }
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
