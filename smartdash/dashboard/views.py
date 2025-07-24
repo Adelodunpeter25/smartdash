@@ -50,22 +50,25 @@ def login_view(request):
 
 def send_welcome_email(email, username):
     api_key = os.getenv('RESEND_API_KEY')
+    if api_key and api_key.startswith('"') and api_key.endswith('"'):
+        api_key = api_key[1:-1]
+    print(f"Resend API Key: {api_key}")  # Debug: print the API key
     url = 'https://api.resend.com/emails'
     headers = {
         'Authorization': f'Bearer {api_key}',
         'Content-Type': 'application/json'
     }
     data = {
-        "from": "SmartDash Onboarding <onboarding@smartdash.com>",
+        "from": "onboarding@resend.dev",
         "to": [email],
         "subject": "Welcome to SmartDash!",
         "html": f"<h2>Welcome, {username}!</h2><p>Thank you for signing up for SmartDash. We're excited to have you on board!</p>"
     }
     try:
         response = requests.post(url, headers=headers, json=data)
+        print(f"Resend API Response: {response.text}")  # Debug: print the full response
         response.raise_for_status()
     except Exception as e:
-        # Optionally log the error for debugging
         print(f"Resend API error: {e}")
 
 def signup_view(request):
