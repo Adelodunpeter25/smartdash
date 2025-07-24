@@ -33,7 +33,15 @@ class Note(models.Model):
 class TodoItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todo_items')
     content = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ]
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     is_completed = models.BooleanField(default=False)
+    due_date = models.DateTimeField(null=True, blank=True, help_text='Due date for the to-do item')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
