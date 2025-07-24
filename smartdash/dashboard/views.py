@@ -48,6 +48,26 @@ def login_view(request):
             messages.error(request, 'Invalid credentials')
     return render(request, 'login.html')
 
+def send_welcome_email(email, username):
+    api_key = os.getenv('RESEND_API_KEY')
+    url = 'https://api.resend.com/emails'
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "from": "SmartDash Onboarding <onboarding@smartdash.com>",
+        "to": [email],
+        "subject": "Welcome to SmartDash!",
+        "html": f"<h2>Welcome, {username}!</h2><p>Thank you for signing up for SmartDash. We're excited to have you on board!</p>"
+    }
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+    except Exception as e:
+        # Optionally log the error for debugging
+        print(f"Resend API error: {e}")
+
 def signup_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -60,6 +80,7 @@ def signup_view(request):
                 messages.error(request, 'Username already exists')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password1)
+                send_welcome_email(email, username)
                 login(request, user)
                 return redirect('/dashboard')
         else:
