@@ -12,9 +12,12 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('calculator/', views.calculator_view, name='calculator'),
     path('notepad/', views.notepad_view, name='notepad'),
+    path('notepad/delete/<int:note_id>/', views.delete_note, name='delete_note'),
     path('unit_converter/', views.unit_converter_view, name='unit_converter'),
     path('currency_converter/', views.currency_converter_view, name='currency_converter'),
     path('calendar/', views.calendar_view, name='calendar'),
     path('weather/', views.weather_view, name='weather'),
     path('clock/', views.clock_view, name='clock'),
+    path('todo/', views.todo_list_view, name='todo_list'),
+    path('todo/delete/<int:todo_id>/', views.delete_todo, name='delete_todo'),
 ]

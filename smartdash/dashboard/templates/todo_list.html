@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}SmartDash - To-Do List{% endblock %}
+
+{% block content %}
+<style>
+.todo-container { max-width: 600px; margin: 3rem auto; background: #fff; border-radius: 12px; box-shadow: 0 8px 32px rgba(40,40,40,0.12); padding: 2rem; }
+.todo-form { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.todo-form input[type=text] { flex: 1; padding: 0.7rem; font-size: 1rem; border-radius: 5px; border: 1px solid #ccc; }
+.todo-form button { padding: 0.7rem 1.5rem; border-radius: 5px; border: none; background: #000; color: #fff; font-weight: bold; cursor: pointer; }
+.todo-list { list-style: none; padding: 0; }
+.todo-list li { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid #eee; }
+.todo-list li:last-child { border-bottom: none; }
+.todo-content { flex: 1; display: flex; align-items: center; gap: 0.7rem; }
+.todo-content input[type=checkbox] { margin-right: 0.5rem; }
+.todo-actions button { background: #ff0000; color: #fff; border: none; border-radius: 4px; padding: 0.3rem 0.8rem; cursor: pointer; font-size: 0.95rem; }
+.todo-actions button:hover { background: #b30000; }
+.todo-list li.completed .todo-content span { text-decoration: line-through; color: #888; }
+</style>
+<div class="todo-container">
+  <h2>To-Do List</h2>
+  <form method="post" class="todo-form" id="todo-form">
+    {% csrf_token %}
+    <input type="hidden" name="todo_id" id="todo_id" value="">
+    <input type="text" name="content" id="todo_content" placeholder="Add a new task..." required />
+    <button type="submit">Save</button>
+    <button type="button" id="newTodoBtn">New</button>
+  </form>
+  <ul class="todo-list" id="todo-list">
+    {% for todo in todos %}
+      <li data-id="{{ todo.id }}" class="{% if todo.is_completed %}completed{% endif %}">
+        <div class="todo-content">
+          <input type="checkbox" class="todo-complete" {% if todo.is_completed %}checked{% endif %}>
+          <span>{{ todo.content }}</span>
+        </div>
+        <div class="todo-actions">
+          <button type="button" class="todo-edit">Edit</button>
+          <button type="button" class="todo-delete">Delete</button>
+        </div>
+      </li>
+    {% empty %}
+      <li>No to-do items yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+<script>
+const todoList = document.getElementById('todo-list');
+const todoIdInput = document.getElementById('todo_id');
+const todoContentInput = document.getElementById('todo_content');
+const newTodoBtn = document.getElementById('newTodoBtn');
+const todoForm = document.getElementById('todo-form');
+
+todoList.addEventListener('click', function(e) {
+  const li = e.target.closest('li[data-id]');
+  if (!li) return;
+  if (e.target.classList.contains('todo-edit')) {
+    todoIdInput.value = li.getAttribute('data-id');
+    todoContentInput.value = li.querySelector('span').textContent;
+  } else if (e.target.classList.contains('todo-delete')) {
+    if (!confirm('Delete this to-do item?')) return;
+    fetch(`/todo/delete/${li.getAttribute('data-id')}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        'Accept': 'application/json',
+      },
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.error || 'Failed to delete to-do.');
+      }
+    });
+  } else if (e.target.classList.contains('todo-complete')) {
+    todoIdInput.value = li.getAttribute('data-id');
+    todoContentInput.value = li.querySelector('span').textContent;
+    todoForm.submit();
+  }
+});
+
+newTodoBtn.addEventListener('click', function() {
+  todoIdInput.value = '';
+  todoContentInput.value = '';
+});
+</script>
+{% endblock %} 
