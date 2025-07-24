@@ -16,5 +16,5 @@ urlpatterns = [
     path('currency_converter/', views.currency_converter_view, name='currency_converter'),
     path('calendar/', views.calendar_view, name='calendar'),
     path('weather/', views.weather_view, name='weather'),
-    path('clock/', views.clock_view, name='clock')
+    path('clock/', views.clock_view, name='clock'),
 ]

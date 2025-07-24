@@ -1,10 +1,12 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Quote
+
 
 def landing_page(request):
     if request.user.is_authenticated:
@@ -88,7 +90,6 @@ def currency_converter_view(request):
 def calendar_view(request):
     return render(request, 'calender.html')
 
-from django.views.decorators.csrf import ensure_csrf_cookie
 @login_required
 @ensure_csrf_cookie
 def weather_view(request):
