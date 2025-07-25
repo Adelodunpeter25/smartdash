@@ -7,9 +7,11 @@
     <main class="main-content">
         <div class="dashboard-container">
             <div class="dashboard-header">
-                <h1 style="text-align: center; margin-bottom: 1rem; color:rgb(13, 14, 14); font-size: 3rem;">Welcome to Your Dashboard</h1>
+                <h1 class="dashboard-title">Welcome to Your Dashboard</h1>
             </div>
-            <p class="dashboard-intro"><strong>{{ user.username |capfirst }}</strong>, welcome back to <strong>SmartDash</strong> — your all-in-one productivity hub. Designed for students, professionals, and everyday users, SmartDash brings together powerful tools like calculators, notepads, converters, and more, all in one easy-to-use interface. Stay organized, get inspired, and simplify your daily tasks — right from your dashboard.</p>
+            <p class="dashboard-intro">
+                <span class="dashboard-username">{{ user.username |capfirst }}</span>, welcome back to <strong>SmartDash</strong>! Your all-in-one hub for productivity. Access notes, tasks, converters, and more—everything you need to stay organized and inspired, right at your fingertips.
+            </p>
             <section id="features" class="features">
                 <div class="feature-grid">
                     <div class="feature-card">
@@ -26,6 +28,11 @@
                         <h3>Notepad</h3>
                         <p>Want to take a quick note or save a journal? We got you!</p>
                         <a href="/notepad/" class="feature-btn">Open</a>
+                    </div>
+                    <div class="feature-card">
+                        <h3>To-Do List</h3>
+                        <p>Organize your tasks, set priorities, and track your progress efficiently.</p>
+                        <a href="/todo/" class="feature-btn">View To-Do List</a>
                     </div>
                     <div class="feature-card">
                         <h3>Currency Converter</h3>
