@@ -18,6 +18,8 @@ urlpatterns = [
     path('calendar/', views.calendar_view, name='calendar'),
     path('weather/', views.weather_view, name='weather'),
     path('clock/', views.clock_view, name='clock'),
-    path('todo/', views.todo_list_view, name='todo_list'),
-    path('todo/delete/<int:todo_id>/', views.delete_todo, name='delete_todo'),
+]
+
+urlpatterns += [
+    path('stopwatch-timer/', views.stopwatch_timer_view, name='stopwatch_timer'),
 ]

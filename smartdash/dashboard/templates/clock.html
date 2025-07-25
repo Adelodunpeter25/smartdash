@@ -10,6 +10,35 @@
     align-items: center;
     justify-content: center;
     min-height: 60vh;
+    gap: 2.5rem;
+}
+.clock-tabs {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+    justify-content: center;
+}
+.clock-tab {
+    background: #f7f7f7;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    padding: 0.7rem 2.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    outline: none;
+}
+.clock-tab.active {
+    background: var(--primary-color, #000);
+    color: #fff;
+}
+.clock-card, .clock-analog {
+    display: none;
+}
+.clock-card.active, .clock-analog.active {
+    display: block;
 }
 .clock-card {
     background: #fff;
@@ -19,10 +48,127 @@
     padding: 2.5rem 2rem;
     font-size: 2.5rem;
     font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-    margin-bottom: 2rem;
     min-width: 260px;
     text-align: center;
     letter-spacing: 0.1em;
+    margin-bottom: 0.7rem;
+}
+.clock-date {
+    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+}
+.clock-day {
+    font-size: 1.1rem;
+    color: #888;
+    margin-bottom: 1.2rem;
+    font-family: inherit;
+}
+.clock-analog {
+    width: 320px;
+    height: 320px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(40,40,40,0.10);
+    position: relative;
+    margin: 0 auto 1.2rem auto;
+    border: 8px solid #f3f3f3;
+}
+.clock-analog .hand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+    background: #111;
+    border-radius: 4px;
+}
+.clock-analog .hand.hour {
+    width: 7px;
+    height: 45px;
+    background: #222;
+    margin-left: -3.5px;
+    margin-top: -45px;
+    z-index: 3;
+}
+.clock-analog .hand.minute {
+    width: 5px;
+    height: 65px;
+    background: #444;
+    margin-left: -2.5px;
+    margin-top: -65px;
+    z-index: 2;
+}
+.clock-analog .hand.second {
+    width: 2.5px;
+    height: 80px;
+    background: #e53935;
+    margin-left: -1.25px;
+    margin-top: -80px;
+    z-index: 1;
+}
+.clock-analog .center-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: #111;
+    border-radius: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    z-index: 10;
+    border: 2px solid #fff;
+}
+.clock-analog .clock-number {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+}
+.clock-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+}
+.clock-controls select, .clock-controls input[type="time"] {
+    padding: 0.5rem 1rem;
+    border-radius: 7px;
+    border: 1.5px solid #ccc;
+    font-size: 1.1rem;
+    background: #fafafa;
+    color: #222;
+}
+.alarm-list {
+    margin-top: 1.2rem;
+    text-align: center;
+}
+.alarm-item {
+    background: #f7f7f7;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    margin: 0.3rem auto;
+    display: inline-block;
+    color: #222;
+    font-size: 1.08rem;
+    position: relative;
+}
+.alarm-item .remove-alarm {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.95rem;
+    margin-left: 0.7rem;
+    cursor: pointer;
 }
 @media (max-width: 600px) {
     .clock-card {
@@ -30,20 +176,185 @@
         padding: 1.5rem 0.5rem;
         min-width: 0;
     }
+    .clock-analog {
+        width: 180px;
+        height: 180px;
+    }
+    .clock-analog .clock-number {
+        font-size: 0.85rem;
+    }
 }
 </style>
 <div class="clock-container">
-    <div class="clock-card" id="clock"></div>
+    <div class="clock-tabs">
+        <button class="clock-tab active" id="tab-digital" type="button">Digital</button>
+        <button class="clock-tab" id="tab-analog" type="button">Analog</button>
+    </div>
+    <div class="clock-controls">
+        <label for="timezone">Time Zone:</label>
+        <select id="timezone">
+            <option value="local">Local</option>
+            <option value="UTC">UTC</option>
+            <option value="America/New_York">New York (EST)</option>
+            <option value="Europe/London">London (GMT)</option>
+            <option value="Europe/Paris">Paris (CET)</option>
+            <option value="Asia/Tokyo">Tokyo (JST)</option>
+            <option value="Asia/Kolkata">India (IST)</option>
+        </select>
+        <label for="alarm-time">Set Alarm:</label>
+        <input type="time" id="alarm-time">
+        <button id="add-alarm" type="button">Add Alarm</button>
+    </div>
+    <div class="clock-card active" id="clock-card">
+        <div class="clock-date" id="clock-date"></div>
+        <div class="clock-day" id="clock-day"></div>
+        <div id="clock-digital"></div>
+    </div>
+    <div class="clock-analog" id="clock-analog">
+        <div class="hand hour" id="hand-hour"></div>
+        <div class="hand minute" id="hand-minute"></div>
+        <div class="hand second" id="hand-second"></div>
+        <div class="center-dot"></div>
+        <!-- Numbers will be added by JS -->
+    </div>
+    <div class="clock-date" id="analog-date"></div>
+    <div class="clock-day" id="analog-day"></div>
+    <div class="alarm-list" id="alarm-list"></div>
 </div>
 <script>
+const digital = document.getElementById('clock-digital');
+const dateEl = document.getElementById('clock-date');
+const dayEl = document.getElementById('clock-day');
+const tzSelect = document.getElementById('timezone');
+const alarmInput = document.getElementById('alarm-time');
+const addAlarmBtn = document.getElementById('add-alarm');
+const alarmList = document.getElementById('alarm-list');
+const tabDigital = document.getElementById('tab-digital');
+const tabAnalog = document.getElementById('tab-analog');
+const cardDigital = document.getElementById('clock-card');
+const analog = document.getElementById('clock-analog');
+let alarms = [];
+
+// Tab switching
+function setTab(tab) {
+    if (tab === 'digital') {
+        cardDigital.classList.add('active');
+        analog.classList.remove('active');
+        tabDigital.classList.add('active');
+        tabAnalog.classList.remove('active');
+    } else {
+        cardDigital.classList.remove('active');
+        analog.classList.add('active');
+        tabDigital.classList.remove('active');
+        tabAnalog.classList.add('active');
+        addAnalogNumbers(); // Add numbers when analog tab is shown
+    }
+}
+tabDigital.onclick = () => setTab('digital');
+tabAnalog.onclick = () => setTab('analog');
+window.addEventListener('resize', function() {
+    if (analog.classList.contains('active')) addAnalogNumbers();
+});
+
+// Add numbers to analog clock
+function addAnalogNumbers() {
+    // Remove any existing numbers first
+    analog.querySelectorAll('.clock-number').forEach(e => e.remove());
+    const rect = analog.getBoundingClientRect();
+    const radius = Math.min(rect.width, rect.height) / 2 - 24;
+    for (let i = 1; i <= 12; i++) {
+        const num = document.createElement('div');
+        num.className = 'clock-number';
+        const angle = (i - 3) * 30 * Math.PI / 180; // 0deg is 3 o'clock
+        const x = 50 + Math.cos(angle) * radius / rect.width * 100;
+        const y = 50 + Math.sin(angle) * radius / rect.height * 100;
+        num.style.left = x + '%';
+        num.style.top = y + '%';
+        num.textContent = i;
+        analog.appendChild(num);
+    }
+}
+
+function getNow(tz) {
+    if (tz === 'local') return new Date();
+    try {
+        return new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+    } catch {
+        return new Date();
+    }
+}
+function pad(n) { return String(n).padStart(2, '0'); }
 function updateClock() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    const tz = tzSelect.value;
+    const now = getNow(tz);
+    // Digital
+    const h = pad(now.getHours());
+    const m = pad(now.getMinutes());
+    const s = pad(now.getSeconds());
+    digital.textContent = `${h}:${m}:${s}`;
+    // Date & Day
+    dateEl.textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    dayEl.textContent = now.toLocaleDateString(undefined, { weekday: 'long' });
+    // Analog
+    const hourDeg = ((now.getHours() % 12) + now.getMinutes() / 60) * 30;
+    const minDeg = (now.getMinutes() + now.getSeconds() / 60) * 6;
+    const secDeg = now.getSeconds() * 6;
+    document.getElementById('hand-hour').style.transform = `rotate(${hourDeg}deg)`;
+    document.getElementById('hand-minute').style.transform = `rotate(${minDeg}deg)`;
+    document.getElementById('hand-second').style.transform = `rotate(${secDeg}deg)`;
+    // Analog date & day
+    document.getElementById('analog-date').textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('analog-day').textContent = now.toLocaleDateString(undefined, { weekday: 'long' });
+    // Alarm check
+    checkAlarms(now);
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+// Alarm logic
+function renderAlarms() {
+    alarmList.innerHTML = '';
+    alarms.forEach((alarm, idx) => {
+        const div = document.createElement('div');
+        div.className = 'alarm-item';
+        div.innerHTML = `${alarm.time} <button class="remove-alarm" data-idx="${idx}">Remove</button>`;
+        alarmList.appendChild(div);
+    });
+    // Save alarms to localStorage for activity feed
+    localStorage.setItem('alarms', JSON.stringify(alarms));
+    document.querySelectorAll('.remove-alarm').forEach(btn => {
+        btn.onclick = function() {
+            alarms.splice(btn.getAttribute('data-idx'), 1);
+            renderAlarms();
+        };
+    });
+}
+// Request notification permission on load
+if (window.Notification && Notification.permission !== 'granted') {
+    Notification.requestPermission();
+}
+addAlarmBtn.onclick = function() {
+    const t = alarmInput.value;
+    if (!t || alarms.some(a => a.time === t)) return;
+    alarms.push({ time: t });
+    renderAlarms();
+};
+function checkAlarms(now) {
+    const h = pad(now.getHours());
+    const m = pad(now.getMinutes());
+    const current = `${h}:${m}`;
+    alarms.forEach(alarm => {
+        if (alarm.time === current && !alarm.triggered) {
+            alarm.triggered = true;
+            // Show browser notification if permitted
+            if (window.Notification && Notification.permission === 'granted') {
+                new Notification(`⏰ Alarm! It's ${alarm.time}`);
+            } else {
+                alert(`⏰ Alarm! It's ${alarm.time}`);
+            }
+            setTimeout(() => { alarm.triggered = false; }, 60000); // reset after 1 min
+        }
+    });
+}
 </script>
 {% endblock %}

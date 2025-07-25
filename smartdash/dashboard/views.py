@@ -10,9 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.cache import cache
-from .models import Quote, Note, TodoItem, Event
+from .models import Quote, Note
 from django.http import JsonResponse, HttpResponseForbidden
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
+from django.db.models import Q
+import json
 
 load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
 
@@ -135,32 +137,7 @@ def delete_note(request, note_id):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Note not found or not authorized.'})
 
-@login_required
-def todo_list_view(request):
-    if request.method == 'POST':
-        todo_id = request.POST.get('todo_id')
-        content = request.POST.get('content', '').strip()
-        is_completed = request.POST.get('is_completed') == 'on'
-        if todo_id:
-            todo = TodoItem.objects.filter(id=todo_id, user=request.user).first()
-            if todo:
-                todo.content = content
-                todo.is_completed = is_completed
-                todo.save()
-        elif content:
-            TodoItem.objects.create(user=request.user, content=content)
-        return redirect('todo_list')
-    todos = TodoItem.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'todo_list.html', {'todos': todos})
-
-@login_required
-@require_POST
-def delete_todo(request, todo_id):
-    todo = TodoItem.objects.filter(id=todo_id, user=request.user).first()
-    if todo:
-        todo.delete()
-        return JsonResponse({'success': True})
-    return JsonResponse({'success': False, 'error': 'Todo not found or not authorized.'})
+# All to-do list related views and code removed
 
 @login_required
 def unit_converter_view(request):
@@ -214,3 +191,6 @@ def weather_view(request):
 @login_required
 def clock_view(request):
     return render(request, 'clock.html')
+
+def stopwatch_timer_view(request):
+    return render(request, 'stopwatch_timer.html')

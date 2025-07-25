@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Stopwatch & Timer - SmartDash{% endblock %}
+{% block content %}
+<style>
+.timer-container { display: flex; flex-direction: column; align-items: center; gap: 2.5rem; min-height: 60vh; }
+.timer-tabs { display: flex; gap: 1.2rem; margin-bottom: 1.2rem; }
+.timer-tab { background: #f7f7f7; border: none; border-radius: 8px 8px 0 0; padding: 0.7rem 2.2rem; font-size: 1.1rem; font-weight: 600; color: #222; cursor: pointer; transition: background 0.2s, color 0.2s; outline: none; }
+.timer-tab.active { background: var(--primary-color, #000); color: #fff; }
+.timer-card { background: #fff; color: #111; border-radius: 18px; box-shadow: 0 8px 32px rgba(40,40,40,0.18); padding: 2.5rem 2rem; font-size: 2.5rem; font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace; min-width: 260px; text-align: center; letter-spacing: 0.1em; margin-bottom: 0.7rem; }
+.timer-controls { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.2rem; }
+.timer-controls input[type="number"] { width: 60px; padding: 0.5rem; border-radius: 7px; border: 1.5px solid #ccc; font-size: 1.1rem; background: #fafafa; color: #222; }
+.timer-controls button { padding: 0.5rem 1.2rem; border-radius: 7px; border: none; background: var(--primary-color, #000); color: #fff; font-size: 1.1rem; cursor: pointer; }
+@media (max-width: 600px) { .timer-card { font-size: 1.5rem; padding: 1.5rem 0.5rem; min-width: 0; } }
+</style>
+<div class="timer-container">
+    <div class="timer-tabs">
+        <button class="timer-tab active" id="tab-stopwatch" type="button">Stopwatch</button>
+        <button class="timer-tab" id="tab-countdown" type="button">Countdown Timer</button>
+    </div>
+    <div class="timer-card" id="stopwatch-card">
+        <div id="stopwatch-display">00:00:00.00</div>
+        <div class="timer-controls">
+            <button id="sw-start">Start</button>
+            <button id="sw-stop">Stop</button>
+            <button id="sw-reset">Reset</button>
+            <button id="sw-lap">Lap</button>
+        </div>
+        <ul id="sw-laps" style="text-align:left;margin-top:1rem;"></ul>
+    </div>
+    <div class="timer-card" id="countdown-card" style="display:none;">
+        <div id="countdown-display">00:00:00</div>
+        <div class="timer-controls">
+            <input type="number" id="cd-hours" min="0" max="99" placeholder="HH">
+            <input type="number" id="cd-minutes" min="0" max="59" placeholder="MM">
+            <input type="number" id="cd-seconds" min="0" max="59" placeholder="SS">
+            <button id="cd-start">Start</button>
+            <button id="cd-stop">Stop</button>
+            <button id="cd-reset">Reset</button>
+        </div>
+    </div>
+</div>
+<script>
+// Tab switching
+const tabSW = document.getElementById('tab-stopwatch');
+const tabCD = document.getElementById('tab-countdown');
+const cardSW = document.getElementById('stopwatch-card');
+const cardCD = document.getElementById('countdown-card');
+tabSW.onclick = () => { tabSW.classList.add('active'); tabCD.classList.remove('active'); cardSW.style.display = ''; cardCD.style.display = 'none'; };
+tabCD.onclick = () => { tabCD.classList.add('active'); tabSW.classList.remove('active'); cardCD.style.display = ''; cardSW.style.display = 'none'; };
+// Stopwatch logic
+let swInterval, swStartTime, swElapsed = 0, swRunning = false, swLaps = [];
+const swDisplay = document.getElementById('stopwatch-display');
+const swStart = document.getElementById('sw-start');
+const swStop = document.getElementById('sw-stop');
+const swReset = document.getElementById('sw-reset');
+const swLap = document.getElementById('sw-lap');
+const swLapsList = document.getElementById('sw-laps');
+function formatSW(ms) {
+    let cs = Math.floor(ms / 10) % 100;
+    let s = Math.floor(ms / 1000) % 60;
+    let m = Math.floor(ms / 60000) % 60;
+    let h = Math.floor(ms / 3600000);
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${cs.toString().padStart(2,'0')}`;
+}
+function updateSW() {
+    swDisplay.textContent = formatSW(swElapsed + (swRunning ? Date.now() - swStartTime : 0));
+}
+swStart.onclick = function() {
+    if (!swRunning) {
+        swStartTime = Date.now();
+        swInterval = setInterval(updateSW, 31);
+        swRunning = true;
+    }
+};
+swStop.onclick = function() {
+    if (swRunning) {
+        swElapsed += Date.now() - swStartTime;
+        clearInterval(swInterval);
+        swRunning = false;
+        updateSW();
+    }
+};
+swReset.onclick = function() {
+    swElapsed = 0; swRunning = false; clearInterval(swInterval); updateSW(); swLaps = []; swLapsList.innerHTML = '';
+};
+swLap.onclick = function() {
+    if (swRunning) {
+        const lapTime = swElapsed + (Date.now() - swStartTime);
+        swLaps.push(lapTime);
+        const li = document.createElement('li');
+        li.textContent = `Lap ${swLaps.length}: ${formatSW(lapTime)}`;
+        swLapsList.appendChild(li);
+    }
+};
+updateSW();
+// Countdown timer logic
+let cdInterval, cdRemaining = 0, cdRunning = false;
+const cdDisplay = document.getElementById('countdown-display');
+const cdStart = document.getElementById('cd-start');
+const cdStop = document.getElementById('cd-stop');
+const cdReset = document.getElementById('cd-reset');
+const cdHours = document.getElementById('cd-hours');
+const cdMinutes = document.getElementById('cd-minutes');
+const cdSeconds = document.getElementById('cd-seconds');
+function formatCD(ms) {
+    let s = Math.floor(ms / 1000) % 60;
+    let m = Math.floor(ms / 60000) % 60;
+    let h = Math.floor(ms / 3600000);
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+function updateCD() {
+    cdDisplay.textContent = formatCD(cdRemaining);
+}
+cdStart.onclick = function() {
+    if (cdRunning) return;
+    let h = parseInt(cdHours.value) || 0;
+    let m = parseInt(cdMinutes.value) || 0;
+    let s = parseInt(cdSeconds.value) || 0;
+    cdRemaining = h*3600000 + m*60000 + s*1000;
+    if (cdRemaining <= 0) return;
+    cdRunning = true;
+    cdInterval = setInterval(function() {
+        cdRemaining -= 1000;
+        updateCD();
+        if (cdRemaining <= 0) {
+            clearInterval(cdInterval);
+            cdRunning = false;
+            cdDisplay.textContent = '00:00:00';
+            if (window.Notification && Notification.permission === 'granted') {
+                new Notification('⏰ Countdown finished!');
+            } else {
+                alert('⏰ Countdown finished!');
+            }
+        }
+    }, 1000);
+};
+cdStop.onclick = function() {
+    if (cdRunning) { clearInterval(cdInterval); cdRunning = false; }
+};
+cdReset.onclick = function() {
+    cdRunning = false; clearInterval(cdInterval); cdRemaining = 0; updateCD(); cdHours.value = cdMinutes.value = cdSeconds.value = '';
+};
+updateCD();
+// Request notification permission on load
+if (window.Notification && Notification.permission !== 'granted') {
+    Notification.requestPermission();
+}
+</script>
+{% endblock %} 

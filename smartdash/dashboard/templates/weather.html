@@ -44,7 +44,7 @@ body {
   color: #111;
 }
 .weather-container {
-  max-width: 400px;
+  max-width: 520px;
   margin: 3rem auto;
   background: #fff;
   border-radius: 18px;
@@ -61,11 +61,15 @@ body {
 .weather-form input {
   flex: 1;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 5px;
   border: 1px solid #444;
   font-size: 1rem;
   color: #111;
   background: #fff;
+}
+.weather-form input:focus {
+  outline: 2px solid #000;
+  border-color: #000;
 }
 .weather-form button {
   background: #222;
@@ -108,39 +112,208 @@ body {
   color: #111;
   margin-bottom: 0.5rem;
 }
+.weather-spinner {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+.weather-spinner.active {
+  display: flex;
+}
+.weather-spinner .loader {
+  border: 6px solid #eee;
+  border-top: 6px solid #222;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.weather-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(40,40,40,0.18);
+  padding: 2rem 1.5rem;
+  margin-top: 1.5rem;
+  transition: box-shadow 0.3s, transform 0.3s;
+  will-change: box-shadow, transform;
+  animation: fadeIn 0.7s;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+.weather-forecast {
+  margin-top: 2rem;
+}
+.weather-forecast-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+  color: #222;
+}
+.weather-forecast-days {
+  display: flex;
+  gap: 1.1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.weather-forecast-day {
+  background: #f7f7f7;
+  border-radius: 12px;
+  min-width: 90px;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(40,40,40,0.08);
+  font-size: 0.98rem;
+  flex-shrink: 0;
+}
+.weather-forecast-day .icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.2rem;
+}
+.weather-hourly-toggle {
+  margin: 2rem 0 0.5rem 0;
+  text-align: center;
+}
+.weather-hourly-toggle button {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.weather-hourly-toggle button:hover {
+  background: #444;
+}
+.weather-hourly {
+  display: none;
+  margin-bottom: 1.5rem;
+}
+.weather-hourly.active {
+  display: block;
+}
+.weather-hourly-list {
+  display: flex;
+  gap: 0.7rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.weather-hourly-item {
+  background: #f7f7f7;
+  border-radius: 10px;
+  min-width: 70px;
+  padding: 0.5rem 0.3rem;
+  text-align: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.weather-hourly-item .icon {
+  font-size: 1.2rem;
+  margin-bottom: 0.1rem;
+}
+.weather-error {
+  color: #c00;
+  font-weight: 500;
+  margin-top: 1.2rem;
+  text-align: center;
+}
 </style>
 <div class="weather-container">
   <form class="weather-form" onsubmit="getWeather(event)">
     <input type="text" id="cityInput" placeholder="Enter city (e.g. Lagos)" required />
     <button type="submit">Get Weather</button>
   </form>
+  <div class="weather-spinner" id="weatherSpinner"><div class="loader"></div></div>
   <div id="weatherResult" class="weather-result"></div>
+  <div class="weather-forecast" id="weatherForecast"></div>
+  <div class="weather-hourly-toggle"><button id="toggleHourly" type="button">Show Hourly Forecast</button></div>
+  <div class="weather-hourly" id="weatherHourly"></div>
 </div>
 <script>
+// Weather code to icon/description mapping
+const weatherMap = {
+  0:  { icon: '☀️', desc: 'Clear sky' },
+  1:  { icon: '🌤️', desc: 'Mainly clear' },
+  2:  { icon: '⛅', desc: 'Partly cloudy' },
+  3:  { icon: '☁️', desc: 'Overcast' },
+  45: { icon: '🌫️', desc: 'Fog' },
+  48: { icon: '🌫️', desc: 'Depositing rime fog' },
+  51: { icon: '🌦️', desc: 'Light drizzle' },
+  53: { icon: '🌦️', desc: 'Drizzle' },
+  55: { icon: '🌦️', desc: 'Dense drizzle' },
+  56: { icon: '🌧️', desc: 'Freezing drizzle' },
+  57: { icon: '🌧️', desc: 'Dense freezing drizzle' },
+  61: { icon: '🌦️', desc: 'Slight rain' },
+  63: { icon: '🌧️', desc: 'Rain' },
+  65: { icon: '🌧️', desc: 'Heavy rain' },
+  66: { icon: '🌧️', desc: 'Freezing rain' },
+  67: { icon: '🌧️', desc: 'Heavy freezing rain' },
+  71: { icon: '🌨️', desc: 'Slight snow fall' },
+  73: { icon: '🌨️', desc: 'Snow fall' },
+  75: { icon: '❄️', desc: 'Heavy snow fall' },
+  77: { icon: '❄️', desc: 'Snow grains' },
+  80: { icon: '🌦️', desc: 'Slight rain showers' },
+  81: { icon: '🌧️', desc: 'Rain showers' },
+  82: { icon: '🌧️', desc: 'Violent rain showers' },
+  85: { icon: '🌨️', desc: 'Slight snow showers' },
+  86: { icon: '🌨️', desc: 'Heavy snow showers' },
+  95: { icon: '⛈️', desc: 'Thunderstorm' },
+  96: { icon: '⛈️', desc: 'Thunderstorm with hail' },
+  99: { icon: '⛈️', desc: 'Thunderstorm with heavy hail' }
+};
+let lastWeatherData = null;
+let lastCity = '';
 async function getWeather(event) {
   event.preventDefault();
   const city = document.getElementById('cityInput').value.trim();
   const resultDiv = document.getElementById('weatherResult');
+  const spinner = document.getElementById('weatherSpinner');
+  const forecastDiv = document.getElementById('weatherForecast');
+  const hourlyDiv = document.getElementById('weatherHourly');
+  forecastDiv.innerHTML = '';
+  hourlyDiv.innerHTML = '';
+  document.getElementById('toggleHourly').textContent = 'Show Hourly Forecast';
+  hourlyDiv.classList.remove('active');
   if (!city) return;
-  resultDiv.innerHTML = 'Loading...';
+  resultDiv.innerHTML = '';
+  spinner.classList.add('active');
   try {
     const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+    if (!geoRes.ok) throw new Error('geo');
     const geoData = await geoRes.json();
     if (!geoData.results || geoData.results.length === 0) {
-      resultDiv.innerHTML = `<span style='color:red;'>City not found.</span>`;
+      spinner.classList.remove('active');
+      resultDiv.innerHTML = `<div class='weather-error'>City not found.<br>Try another city or check your spelling.</div>`;
       return;
     }
     const { latitude, longitude, name, country } = geoData.results[0];
-    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,rain,is_day&hourly=rain,temperature_2m&timezone=auto&forecast_days=3&past_days=1&daily=rain_sum,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,weather_code&wind_speed_unit=ms`);
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,rain,is_day,weather_code&hourly=rain,temperature_2m,weather_code&timezone=auto&forecast_days=7&past_days=1&daily=rain_sum,temperature_2m_max,temperature_2m_min,sunrise,sunset,daylight_duration,weather_code&wind_speed_unit=ms`);
+    if (!weatherRes.ok) throw new Error('weather');
     const weatherData = await weatherRes.json();
+    spinner.classList.remove('active');
     if (!weatherData.current) {
-      resultDiv.innerHTML = `<span style='color:red;'>Weather data not available.</span>`;
+      resultDiv.innerHTML = `<div class='weather-error'>Weather data not available.<br>Please try again later.</div>`;
       return;
     }
+    lastWeatherData = weatherData;
+    lastCity = city;
     const temp = weatherData.current.temperature_2m;
     const humidity = weatherData.current.relative_humidity_2m;
     const rain = weatherData.current.rain;
     const isDay = weatherData.current.is_day ? 'Day' : 'Night';
+    const wcode = weatherData.current.weather_code;
+    const winfo = weatherMap[wcode] || { icon: '❓', desc: 'Unknown' };
     const daily = weatherData.daily || {};
     const tmax = daily.temperature_2m_max ? daily.temperature_2m_max[0] : '-';
     const tmin = daily.temperature_2m_min ? daily.temperature_2m_min[0] : '-';
@@ -149,19 +322,72 @@ async function getWeather(event) {
     const sunset = daily.sunset ? new Date(daily.sunset[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-';
     const daylight = daily.daylight_duration ? (Math.round(daily.daylight_duration[0]/3600*10)/10) + ' hrs' : '-';
     resultDiv.innerHTML = `
-      <div class='weather-temp'>🌡️ ${Math.round(temp)}°C</div>
-      <div class='weather-desc'>💧 Humidity: ${humidity}%</div>
-      <div class='weather-desc'>🌧️ Rain (now): ${rain} mm</div>
-      <div class='weather-desc'>🔺 Max: ${tmax}°C &nbsp;|&nbsp; 🔻 Min: ${tmin}°C</div>
-      <div class='weather-desc'>☔ Rain (today): ${rainSum} mm</div>
-      <div class='weather-desc'>🌅 Sunrise: ${sunrise} &nbsp;|&nbsp; 🌇 Sunset: ${sunset}</div>
-      <div class='weather-desc'>🕒 Daylight: ${daylight}</div>
-      <div class='weather-desc'>${isDay === 'Day' ? '🌞 Day' : '🌙 Night'}</div>
-      <div class='weather-location'>📍 ${name}, ${country}</div>
+      <div class='weather-card'>
+        <div class='weather-temp' style='font-size:2.5rem;'>${winfo.icon} ${Math.round(temp)}°C</div>
+        <div class='weather-desc' style='font-size:1.15rem;'>${winfo.desc}</div>
+        <div class='weather-desc'>💧 Humidity: ${humidity}%</div>
+        <div class='weather-desc'>🌧️ Rain (now): ${rain} mm</div>
+        <div class='weather-desc'>🔺 Max: ${tmax}°C &nbsp;|&nbsp; 🔻 Min: ${tmin}°C</div>
+        <div class='weather-desc'>☔ Rain (today): ${rainSum} mm</div>
+        <div class='weather-desc'>🌅 Sunrise: ${sunrise} &nbsp;|&nbsp; 🌇 Sunset: ${sunset}</div>
+        <div class='weather-desc'>🕒 Daylight: ${daylight}</div>
+        <div class='weather-desc'>${isDay === 'Day' ? '🌞 Day' : '🌙 Night'}</div>
+        <div class='weather-location'>📍 ${name}, ${country}</div>
+      </div>
     `;
+    // 7-day forecast
+    if (daily && daily.time && daily.time.length > 0) {
+      let daysHtml = '';
+      for (let i = 0; i < daily.time.length; i++) {
+        const date = new Date(daily.time[i]);
+        const day = date.toLocaleDateString(undefined, { weekday: 'short' });
+        const icon = weatherMap[daily.weather_code ? daily.weather_code[i] : 0]?.icon || '❓';
+        const desc = weatherMap[daily.weather_code ? daily.weather_code[i] : 0]?.desc || 'Unknown';
+        daysHtml += `<div class='weather-forecast-day'><div class='icon'>${icon}</div><div>${day}</div><div style='font-size:1.1rem;'>${Math.round(daily.temperature_2m_max[i])}°/${Math.round(daily.temperature_2m_min[i])}°</div><div style='font-size:0.95rem;color:#666;'>${desc}</div><div style='font-size:0.9rem;'>${daily.rain_sum ? daily.rain_sum[i] : '-'} mm</div></div>`;
+      }
+      forecastDiv.innerHTML = `<div class='weather-forecast-title'>7-Day Forecast</div><div class='weather-forecast-days'>${daysHtml}</div>`;
+    }
+    // Hourly forecast (next 24h)
+    if (weatherData.hourly && weatherData.hourly.time && weatherData.hourly.time.length > 0) {
+      let now = Date.now();
+      let hoursHtml = '';
+      for (let i = 0; i < weatherData.hourly.time.length && hoursHtml.length < 24*100; i++) {
+        const t = new Date(weatherData.hourly.time[i]);
+        if (t.getTime() < now) continue;
+        if (hoursHtml.split('weather-hourly-item').length > 24) break;
+        const hour = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const icon = weatherMap[weatherData.hourly.weather_code ? weatherData.hourly.weather_code[i] : 0]?.icon || '❓';
+        const desc = weatherMap[weatherData.hourly.weather_code ? weatherData.hourly.weather_code[i] : 0]?.desc || 'Unknown';
+        hoursHtml += `<div class='weather-hourly-item'><div class='icon'>${icon}</div><div>${hour}</div><div style='font-size:1.05rem;'>${Math.round(weatherData.hourly.temperature_2m[i])}°C</div><div style='font-size:0.9rem;color:#666;'>${desc}</div><div style='font-size:0.85rem;'>${weatherData.hourly.rain ? weatherData.hourly.rain[i] : '-'} mm</div></div>`;
+      }
+      hourlyDiv.innerHTML = `<div class='weather-forecast-title' style='margin-bottom:0.5rem;'>Next 24 Hours</div><div class='weather-hourly-list'>${hoursHtml}</div>`;
+    }
   } catch (e) {
-    resultDiv.innerHTML = `<span style='color:red;'>Error fetching weather.</span>`;
+    spinner.classList.remove('active');
+    let msg = `<div class='weather-error'>`;
+    if (e.message === 'geo') {
+      msg += `Could not connect to location service.<br>Check your internet connection or try again later.`;
+    } else if (e.message === 'weather') {
+      msg += `Could not fetch weather data.<br>Try again in a few minutes.`;
+    } else {
+      msg += `Error fetching weather.<br>Please check your internet connection or try a different city.`;
+    }
+    msg += `</div>`;
+    resultDiv.innerHTML = msg;
+    forecastDiv.innerHTML = '';
+    hourlyDiv.innerHTML = '';
   }
 }
+document.getElementById('toggleHourly').onclick = function() {
+  const hourlyDiv = document.getElementById('weatherHourly');
+  if (!lastWeatherData || !lastWeatherData.hourly) return;
+  if (hourlyDiv.classList.contains('active')) {
+    hourlyDiv.classList.remove('active');
+    this.textContent = 'Show Hourly Forecast';
+  } else {
+    hourlyDiv.classList.add('active');
+    this.textContent = 'Hide Hourly Forecast';
+  }
+};
 </script>
 {% endblock %}

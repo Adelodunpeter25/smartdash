@@ -4,37 +4,104 @@
 
 {% block content %}
 
-<div class="converter-container">
-  <h1>Unit Converter</h1>
-
-  <div class="form-group">
-    <label for="category">Category</label>
-    <select id="category" onchange="populateUnits()">
-      <option value="length">Length</option>
-      <option value="weight">Weight</option>
-      <option value="temperature">Temperature</option>
-      <option value="speed">Speed</option>
-      <option value="volume">Volume</option>
-      <option value="time">Time</option>
-    </select>
+<style>
+.unit-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+.unit-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  margin: 4.5rem auto 2.5rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .unit-card {
+    width: auto;
+    max-width: calc(100% - 0.2rem);
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 2.5rem;
+    box-sizing: border-box;
+  }
+}
+.unit-card h1 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  text-align: center;
+}
+.unit-card .form-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+.unit-card label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+.unit-card select, .unit-card input[type="number"] {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #111;
+  background: #fff;
+  box-sizing: border-box;
+}
+.unit-card input[type="number"]:focus, .unit-card select:focus {
+  outline: 2px solid #000;
+  border-color: #000;
+}
+#result {
+  margin-top: 1.5rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+  text-align: center;
+}
+</style>
+<div class="unit-wrapper">
+  <div class="unit-card">
+    <h1>Unit Converter</h1>
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" onchange="populateUnits()">
+        <option value="length">Length</option>
+        <option value="weight">Weight</option>
+        <option value="temperature">Temperature</option>
+        <option value="speed">Speed</option>
+        <option value="volume">Volume</option>
+        <option value="time">Time</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="from-unit">From</label>
+      <select id="from-unit"></select>
+    </div>
+    <div class="form-group">
+      <label for="to-unit">To</label>
+      <select id="to-unit"></select>
+    </div>
+    <div class="form-group">
+      <label for="value">Value</label>
+      <input type="number" id="value" value="1" oninput="convertUnit()" />
+    </div>
+    <div id="result">1 m = 1 m</div>
   </div>
-
-  <div class="form-group">
-    <label for="from-unit">From</label>
-    <select id="from-unit"></select>
-  </div>
-
-  <div class="form-group">
-    <label for="to-unit">To</label>
-    <select id="to-unit"></select>
-  </div>
-
-  <div class="form-group">
-    <label for="value">Value</label>
-    <input type="number" id="value" value="1" oninput="convertUnit()" />
-  </div>
-
-  <div id="result">1 m = 1 m</div>
 </div>
 
 <script>
